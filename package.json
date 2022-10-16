@@ -1,8 +1,8 @@
 {
-  "name": "typescript-action",
+  "name": "setup-job-workspacce-action",
   "version": "0.0.0",
   "private": true,
-  "description": "TypeScript template action",
+  "description": "A action create workspace to checkout repository for each jobs",
   "main": "lib/main.js",
   "scripts": {
     "build": "tsc",
@@ -15,14 +15,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/actions/typescript-action.git"
+    "url": "git+https://github.com/kesin11-private/setup-job-workspace-action.git"
   },
   "keywords": [
     "actions",
     "node",
     "setup"
   ],
-  "author": "",
+  "author": "kesin1202000@gmail.com",
   "license": "MIT",
   "dependencies": {
     "@actions/core": "^1.10.0"
