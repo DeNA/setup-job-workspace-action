@@ -6,13 +6,13 @@ import fs from 'fs'
 import { Context } from '@actions/github/lib/context'
 
 // /_work/self-hosted-sandbox/self-hosted-sandbox
-export function getWorkspacePath(): string {
+function getWorkspacePath(): string {
   if (!process.env.GITHUB_WORKSPACE) throw new Error('env GITHUB_WORKSPACE is undefined!')
   return process.env.GITHUB_WORKSPACE
 }
 
 // /_work/self-hosted-sandbox
-export function runnerWorkspacePath(): string {
+function getRunnerWorkspacePath(): string {
   if (!process.env.RUNNER_WORKSPACE) throw new Error('env RUNNER_WORKSPACE is undefined!')
   return process.env.RUNNER_WORKSPACE
 }
@@ -39,11 +39,11 @@ export async function replaceWorkspace(context: Context, workspaceName: string |
   // WORKFLOW_YAML=$(basename "${{ github.event.workflow }}" .yml)
   // TMP_DIR="${RUNNER_WORKSPACE}/${WORKFLOW_YAML}-${{ github.job }}"
   // mkdir -p ${TMP_DIR}
-  const concreteWorkspacePath = path.join(runnerWorkspacePath(), createDirName(context, workspaceName)) 
+  const concreteWorkspacePath = path.join(getRunnerWorkspacePath(), createDirName(context, workspaceName)) 
   await io.mkdirP(concreteWorkspacePath)
 
   // ln -s "${TMP_DIR}" ${GITHUB_WORKSPACE}
-  await fs.promises.symlink(workspacePath, concreteWorkspacePath)
+  await fs.promises.symlink(concreteWorkspacePath, workspacePath)
   return
 }
 
