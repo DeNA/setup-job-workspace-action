@@ -1,9 +1,9 @@
-import { Context } from '@actions/github/lib/context'
-import { expect, test, beforeEach, afterEach } from '@jest/globals'
-import { createDirName, replaceWorkspace } from '../src/main'
 import path from 'path'
 import os from 'os'
 import fs from 'fs'
+import { Context } from '@actions/github/lib/context'
+import { expect, test, beforeEach, afterEach } from '@jest/globals'
+import { createDirName, replaceWorkspace } from '../src/workspace'
 
 const workflowName = "test"
 const jobName = "testJob"

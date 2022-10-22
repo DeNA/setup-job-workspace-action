@@ -1,10 +1,9 @@
-import { Context } from '@actions/github/lib/context'
-import { expect, test, beforeEach, afterEach } from '@jest/globals'
-import { replaceWorkspace } from '../src/main'
-import { restoreWorkspace } from '../src/post'
 import path from 'path'
 import os from 'os'
 import fs from 'fs'
+import { Context } from '@actions/github/lib/context'
+import { expect, test, beforeEach, afterEach } from '@jest/globals'
+import { replaceWorkspace, restoreWorkspace } from '../src/workspace'
 
 const workflowName = "test"
 const jobName = "testJob"
@@ -26,7 +25,7 @@ beforeEach(async () => {
   }
   await fs.promises.mkdir(process.env.GITHUB_WORKSPACE!, { recursive: true })
 
-  // Do main step of actions before each test
+  // Do main step of own actions before each test
   await replaceWorkspace(contextMock, undefined)
 })
 
