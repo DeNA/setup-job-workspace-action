@@ -6,7 +6,7 @@ import fs from 'fs'
 import { Context } from '@actions/github/lib/context'
 
 // /_work/self-hosted-sandbox/self-hosted-sandbox
-function getWorkspacePath(): string {
+export function getWorkspacePath(): string {
   if (!process.env.GITHUB_WORKSPACE) throw new Error('env GITHUB_WORKSPACE is undefined!')
   return process.env.GITHUB_WORKSPACE
 }
