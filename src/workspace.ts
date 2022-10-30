@@ -6,7 +6,7 @@ import { Context } from '@actions/github/lib/context'
 
 // /_work/self-hosted-sandbox/self-hosted-sandbox
 export function getWorkspacePath (): string {
-  if (!process.env.GITHUB_WORKSPACE) {
+  if (process.env.GITHUB_WORKSPACE === undefined) {
     throw new Error('env GITHUB_WORKSPACE is undefined!')
   }
   return process.env.GITHUB_WORKSPACE
@@ -14,12 +14,12 @@ export function getWorkspacePath (): string {
 
 // /_work/self-hosted-sandbox
 function getRunnerWorkspacePath (): string {
-  if (!process.env.RUNNER_WORKSPACE) throw new Error('env RUNNER_WORKSPACE is undefined!')
+  if (process.env.RUNNER_WORKSPACE === undefined) throw new Error('env RUNNER_WORKSPACE is undefined!')
   return process.env.RUNNER_WORKSPACE
 }
 
 export function createDirName (context: Context, workspaceName: string | undefined): string {
-  if (workspaceName) return workspaceName
+  if (workspaceName !== undefined) return workspaceName
 
   // NOTE: これが本当に取れるかは若干怪しい気がする
   const workflowYaml = context.payload.workflow as string
