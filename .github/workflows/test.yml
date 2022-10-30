@@ -6,7 +6,20 @@ on: # rebuild any PRs and main branch changes
       - main
 
 jobs:
-  build-test: # make sure build/ci work properly
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set Node.js 16.x
+        uses: actions/setup-node@v3.5.1
+        with:
+          node-version: 16.x
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+  build-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
