@@ -7,8 +7,8 @@
   "scripts": {
     "build": "tsc",
     "package": "ncc build --source-map --license licenses.txt",
-    "lint": "ts-standard src/**/* __tests__/**/*",
-    "lint:fix": "ts-standard --fix src/**/* __tests__/**/*",
+    "lint": "ts-standard src/**/*",
+    "lint:fix": "ts-standard --fix src/**/*",
     "test": "jest",
     "test:watch": "jest --watch",
     "all": "npm run build && npm run lint && npm run package && npm test"
