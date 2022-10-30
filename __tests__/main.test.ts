@@ -5,8 +5,8 @@ import { Context } from '@actions/github/lib/context'
 import { expect, test, beforeEach, afterEach } from '@jest/globals'
 import { createDirName, replaceWorkspace } from '../src/workspace'
 
-const workflowName = "test"
-const jobName = "testJob"
+const workflowName = 'test'
+const jobName = 'testJob'
 const contextMock = {
   payload: {
     workflow: `./.github/workflows/${workflowName}.yml`
@@ -15,13 +15,13 @@ const contextMock = {
 } as unknown as Context
 
 const origEnv = process.env
-let tmpDirPath = ""
+let tmpDirPath = ''
 beforeEach(async () => {
-  tmpDirPath = await fs.promises.mkdtemp(path.join(os.tmpdir(), "_work"))
+  tmpDirPath = await fs.promises.mkdtemp(path.join(os.tmpdir(), '_work'))
   process.env = {
     ...origEnv,
-    RUNNER_WORKSPACE: `${path.join(tmpDirPath, "testRepo")}`,
-    GITHUB_WORKSPACE: `${path.join(tmpDirPath, "testRepo", "testRepo")}`
+    RUNNER_WORKSPACE: `${path.join(tmpDirPath, 'testRepo')}`,
+    GITHUB_WORKSPACE: `${path.join(tmpDirPath, 'testRepo', 'testRepo')}`
   }
   await fs.promises.mkdir(process.env.GITHUB_WORKSPACE!, { recursive: true })
 })
@@ -32,7 +32,7 @@ afterEach(async () => {
 })
 
 test('createDirName() returns workspaceName', async () => {
-  const workspaceName = "test-dir"
+  const workspaceName = 'test-dir'
   const actual = createDirName(contextMock, workspaceName)
   await expect(actual).toEqual(workspaceName)
 })
@@ -43,7 +43,7 @@ test('createDirName() returns default name', async () => {
 })
 
 test('replaceWorkspace() with workspaceName', async () => {
-  const workspaceName = "test-dir"
+  const workspaceName = 'test-dir'
   await replaceWorkspace(contextMock, workspaceName)
 
   const concreteWorkspacePath = path.join(process.env.RUNNER_WORKSPACE!, workspaceName)
