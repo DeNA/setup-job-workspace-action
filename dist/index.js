@@ -35,9 +35,9 @@ const github = __importStar(__nccwpck_require__(5438));
 const workspace_1 = __nccwpck_require__(1316);
 async function run() {
     try {
-        core.debug(`Main process`);
+        core.debug('Main process');
         const context = github.context;
-        const workspaceName = core.getInput("workspace-name");
+        const workspaceName = core.getInput('workspace-name');
         await (0, workspace_1.replaceWorkspace)(context, workspaceName);
     }
     catch (error) {
@@ -46,7 +46,7 @@ async function run() {
             core.setFailed(error.message);
     }
 }
-run();
+run().catch((error) => console.error(error));
 
 
 /***/ }),
@@ -90,7 +90,7 @@ const core = __importStar(__nccwpck_require__(2186));
 const io = __importStar(__nccwpck_require__(7436));
 // /_work/self-hosted-sandbox/self-hosted-sandbox
 function getWorkspacePath() {
-    if (!process.env.GITHUB_WORKSPACE) {
+    if (process.env.GITHUB_WORKSPACE === undefined) {
         throw new Error('env GITHUB_WORKSPACE is undefined!');
     }
     return process.env.GITHUB_WORKSPACE;
@@ -98,12 +98,12 @@ function getWorkspacePath() {
 exports.getWorkspacePath = getWorkspacePath;
 // /_work/self-hosted-sandbox
 function getRunnerWorkspacePath() {
-    if (!process.env.RUNNER_WORKSPACE)
+    if (process.env.RUNNER_WORKSPACE === undefined)
         throw new Error('env RUNNER_WORKSPACE is undefined!');
     return process.env.RUNNER_WORKSPACE;
 }
 function createDirName(context, workspaceName) {
-    if (workspaceName)
+    if (workspaceName !== undefined)
         return workspaceName;
     // NOTE: これが本当に取れるかは若干怪しい気がする
     const workflowYaml = context.payload.workflow;
@@ -125,7 +125,6 @@ async function replaceWorkspace(context, workspaceName) {
     await io.mkdirP(concreteWorkspacePath);
     // ln -s "${TMP_DIR}" ${GITHUB_WORKSPACE}
     await fs_1.default.promises.symlink(concreteWorkspacePath, workspacePath);
-    return;
 }
 exports.replaceWorkspace = replaceWorkspace;
 async function restoreWorkspace() {
