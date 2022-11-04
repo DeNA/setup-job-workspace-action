@@ -23,10 +23,10 @@ jobs:
       - name: $GITHUB_WORKSPACE is symlink
         run: test -L $GITHUB_WORKSPACE
       - name: $GITHUB_WORKSPACE.bak is exists 
-        run: test -f ${GITHUB_WORKSPACE}.bak
+        run: test -d ${GITHUB_WORKSPACE}.bak
       - name: Created workspace is not symlkink
         run: |
-          test -f $RUNNER_WORKSPACE/test-dir
+          test -d $RUNNER_WORKSPACE/test-dir
           if [ -L $RUNNER_WORKSPACE/test-dir ]; then
             exit 1
           fi
