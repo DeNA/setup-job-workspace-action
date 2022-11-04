@@ -4,9 +4,12 @@
   "private": true,
   "description": "A action create workspace to checkout repository for each jobs",
   "main": "lib/main.js",
+  "engines": {
+    "node": ">=16.0.0"
+  },
   "scripts": {
     "build": "tsc",
-    "package": "ncc build --source-map --license licenses.txt",
+    "package": "ncc build --source-map -o dist/main src/main.ts && ncc build --source-map -o dist/post src/post.ts",
     "lint": "ts-standard src/**/*",
     "lint:fix": "ts-standard --fix src/**/*",
     "test": "jest",
