@@ -30,3 +30,7 @@ jobs:
           if [ -L $RUNNER_WORKSPACE/test-dir ]; then
             exit 1
           fi
+
+      - name: Checkout to new workspace for action post process
+        uses: actions/checkout@v3
+        if: {{ always() }}
