@@ -7,5 +7,5 @@ inputs:
     description: 'Input workspace directory name if you need to change from default: ${workspace-yaml-name}-${job-name}'
 runs:
   using: 'node16'
-  main: 'dist/index.js'
-  post: 'dist/post.js'
+  main: 'dist/main/index.js'
+  post: 'dist/post/index.js'
