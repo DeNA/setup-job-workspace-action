@@ -33,4 +33,4 @@ jobs:
 
       - name: Checkout to new workspace for action post process
         uses: actions/checkout@v3
-        if: {{ always() }}
+        if: ${{ always() }}
