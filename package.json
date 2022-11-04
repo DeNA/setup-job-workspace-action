@@ -4,6 +4,9 @@
   "private": true,
   "description": "A action create workspace to checkout repository for each jobs",
   "main": "lib/main.js",
+  "engines": {
+    "node": ">=16.0.0"
+  },
   "scripts": {
     "build": "tsc",
     "package": "ncc build --source-map --license licenses.txt",
