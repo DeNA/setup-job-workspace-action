@@ -7,7 +7,7 @@ on:
 
 jobs:
   linux:
-    runs-on: [self-hosted, small]
+    runs-on: ubuntu-latest
     steps:
       - name: $GITHUB_WORKSPACE is not symlink
         run: |
