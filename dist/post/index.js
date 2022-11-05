@@ -3257,11 +3257,12 @@ async function run() {
         await (0, workspace_1.restoreWorkspace)();
     }
     catch (error) {
+        core.error(JSON.stringify(error));
         if (error instanceof Error)
             core.setFailed(error.message);
     }
 }
-run().catch((error) => console.error(error));
+run().catch((error) => console.error(JSON.stringify(error)));
 
 
 /***/ }),
@@ -3318,11 +3319,14 @@ function getRunnerWorkspacePath() {
     return process.env.RUNNER_WORKSPACE;
 }
 function createDirName(context, workspaceName) {
-    if (workspaceName !== undefined)
+    core.info(`workspaceName: ${workspaceName}`);
+    core.info("show payload context in createDirName");
+    core.info(JSON.stringify(context.payload));
+    core.info(JSON.stringify(context.workflow));
+    if (workspaceName !== "")
         return workspaceName;
-    // NOTE: これが本当に取れるかは若干怪しい気がする
-    const workflowYaml = context.payload.workflow;
-    core.notice(`workflowYaml: ${workflowYaml}`);
+    const workflowYaml = context.workflow;
+    core.info(`workflowYaml: ${workflowYaml}`);
     const yamlExtName = path_1.default.extname(workflowYaml);
     const workflowYamlBaseName = path_1.default.basename(workflowYaml, yamlExtName);
     return `${workflowYamlBaseName}-${context.job}`;
@@ -3331,6 +3335,7 @@ exports.createDirName = createDirName;
 async function replaceWorkspace(context, workspaceName) {
     // mv ${GITHUB_WORKSPACE} ${GITHUB_WORKSPACE}.bak
     const workspacePath = getWorkspacePath();
+    core.info(`workspacePath: ${workspacePath}`);
     const workspaceBakPath = workspacePath + '.bak';
     await io.mv(workspacePath, workspaceBakPath);
     // WORKFLOW_YAML=$(basename "${{ github.event.workflow }}" .yml)

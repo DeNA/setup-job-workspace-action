@@ -18,12 +18,11 @@ function getRunnerWorkspacePath (): string {
   return process.env.RUNNER_WORKSPACE
 }
 
-export function createDirName (context: Context, workspaceName: string | undefined): string {
-  if (workspaceName !== undefined) return workspaceName
+export function createDirName (context: Context, workspaceName: string): string {
+  if (workspaceName !== "") return workspaceName
 
-  // NOTE: これが本当に取れるかは若干怪しい気がする
-  const workflowYaml = context.payload.workflow as string
-  core.notice(`workflowYaml: ${workflowYaml}`)
+  const workflowYaml = context.workflow
+  core.info(`workflowYaml: ${workflowYaml}`)
 
   const yamlExtName = path.extname(workflowYaml)
   const workflowYamlBaseName = path.basename(workflowYaml, yamlExtName)
@@ -31,9 +30,10 @@ export function createDirName (context: Context, workspaceName: string | undefin
   return `${workflowYamlBaseName}-${context.job}`
 }
 
-export async function replaceWorkspace (context: Context, workspaceName: string | undefined): Promise<void> {
+export async function replaceWorkspace (context: Context, workspaceName: string): Promise<void> {
   // mv ${GITHUB_WORKSPACE} ${GITHUB_WORKSPACE}.bak
   const workspacePath = getWorkspacePath()
+  core.info(`workspacePath: ${workspacePath}`)
   const workspaceBakPath = workspacePath + '.bak'
   await io.mv(workspacePath, workspaceBakPath)
 

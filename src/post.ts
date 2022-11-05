@@ -6,8 +6,9 @@ async function run (): Promise<void> {
     core.debug('Post process')
     await restoreWorkspace()
   } catch (error) {
+    core.error(JSON.stringify(error))
     if (error instanceof Error) core.setFailed(error.message)
   }
 }
 
-run().catch((error) => console.error(error))
+run().catch((error) => console.error(JSON.stringify(error)))
