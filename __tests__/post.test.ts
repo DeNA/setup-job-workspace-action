@@ -8,9 +8,7 @@ import { replaceWorkspace, restoreWorkspace } from '../src/workspace'
 const workflowName = 'test'
 const jobName = 'testJob'
 const contextMock = {
-  payload: {
-    workflow: `./.github/workflows/${workflowName}.yml`
-  },
+  workflow: `./.github/workflows/${workflowName}.yml`,
   job: jobName
 } as unknown as Context
 
@@ -26,7 +24,7 @@ beforeEach(async () => {
   await fs.promises.mkdir(process.env.GITHUB_WORKSPACE!, { recursive: true })
 
   // Do main step of own actions before each test
-  await replaceWorkspace(contextMock, undefined)
+  await replaceWorkspace(contextMock, "")
 })
 
 afterEach(async () => {

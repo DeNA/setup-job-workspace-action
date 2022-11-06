@@ -20,7 +20,7 @@ function getRunnerWorkspacePath (): string {
 
 export function createDirName (context: Context, workspaceName: string): string {
   core.debug(`workspaceName: ${workspaceName}`)
-  if (workspaceName !== "") return workspaceName
+  if (workspaceName !== '') return workspaceName
 
   const workflowYaml = context.workflow
   core.debug(`workflowYaml: ${workflowYaml}`)
