@@ -7,7 +7,11 @@ on:
 
 jobs:
   default:
-    runs-on: [self-hosted, small]
+    strategy:
+      matrix:
+        runner: [ubuntu-latest, macos-latest]
+      fail-fast: false
+    runs-on: ${{ matrix.runner }}
     steps:
       - name: $GITHUB_WORKSPACE is not symlink
         run: |
@@ -34,7 +38,11 @@ jobs:
         uses: actions/checkout@v3
         if: ${{ always() }}
   workspace_name:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        runner: [ubuntu-latest, macos-latest]
+      fail-fast: false
+    runs-on: ${{ matrix.runner }}
     steps:
       - name: $GITHUB_WORKSPACE is not symlink
         run: |
