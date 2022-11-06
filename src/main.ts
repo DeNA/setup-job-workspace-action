@@ -4,11 +4,6 @@ import { replaceWorkspace } from './workspace'
 
 async function run (): Promise<void> {
   try {
-    core.debug('Main process')
-
-    core.info("debug show context")
-    core.info(JSON.stringify(github.context))
-
     const workspaceName: string = core.getInput('workspace-name')
     await replaceWorkspace(github.context, workspaceName)
   } catch (error) {
