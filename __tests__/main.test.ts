@@ -8,9 +8,7 @@ import { createDirName, replaceWorkspace } from '../src/workspace'
 const workflowName = 'test'
 const jobName = 'testJob'
 const contextMock = {
-  payload: {
-    workflow: `./.github/workflows/${workflowName}.yml`
-  },
+  workflow: `./.github/workflows/${workflowName}.yml`,
   job: jobName
 } as unknown as Context
 
@@ -38,7 +36,7 @@ test('createDirName() returns workspaceName', async () => {
 })
 
 test('createDirName() returns default name', async () => {
-  const actual = createDirName(contextMock, undefined)
+  const actual = createDirName(contextMock, "")
   await expect(actual).toEqual(`${workflowName}-${jobName}`)
 })
 
@@ -56,8 +54,8 @@ test('replaceWorkspace() with workspaceName', async () => {
   expect(fs.lstatSync(process.env.GITHUB_WORKSPACE!).isSymbolicLink()).toBe(true)
 })
 
-test('replaceWorkspace() with no argument', async () => {
-  await replaceWorkspace(contextMock, undefined)
+test('replaceWorkspace() with default input', async () => {
+  await replaceWorkspace(contextMock, "")
 
   const concreteWorkspacePath = path.join(process.env.RUNNER_WORKSPACE!, `${workflowName}-${jobName}`)
 

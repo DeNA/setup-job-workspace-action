@@ -18,12 +18,12 @@ function getRunnerWorkspacePath (): string {
   return process.env.RUNNER_WORKSPACE
 }
 
-export function createDirName (context: Context, workspaceName: string | undefined): string {
-  if (workspaceName !== undefined) return workspaceName
+export function createDirName (context: Context, workspaceName: string): string {
+  core.debug(`workspaceName: ${workspaceName}`)
+  if (workspaceName !== '') return workspaceName
 
-  // NOTE: これが本当に取れるかは若干怪しい気がする
-  const workflowYaml = context.payload.workflow as string
-  core.notice(`workflowYaml: ${workflowYaml}`)
+  const workflowYaml = context.workflow
+  core.debug(`workflowYaml: ${workflowYaml}`)
 
   const yamlExtName = path.extname(workflowYaml)
   const workflowYamlBaseName = path.basename(workflowYaml, yamlExtName)
@@ -31,26 +31,31 @@ export function createDirName (context: Context, workspaceName: string | undefin
   return `${workflowYamlBaseName}-${context.job}`
 }
 
-export async function replaceWorkspace (context: Context, workspaceName: string | undefined): Promise<void> {
+export async function replaceWorkspace (context: Context, workspaceName: string): Promise<void> {
   // mv ${GITHUB_WORKSPACE} ${GITHUB_WORKSPACE}.bak
   const workspacePath = getWorkspacePath()
   const workspaceBakPath = workspacePath + '.bak'
   await io.mv(workspacePath, workspaceBakPath)
+  core.info(`mv ${workspacePath} ${workspaceBakPath}}`)
 
   // WORKFLOW_YAML=$(basename "${{ github.event.workflow }}" .yml)
   // TMP_DIR="${RUNNER_WORKSPACE}/${WORKFLOW_YAML}-${{ github.job }}"
   // mkdir -p ${TMP_DIR}
   const concreteWorkspacePath = path.join(getRunnerWorkspacePath(), createDirName(context, workspaceName))
   await io.mkdirP(concreteWorkspacePath)
+  core.info(`mkdir -p ${concreteWorkspacePath}`)
 
   // ln -s "${TMP_DIR}" ${GITHUB_WORKSPACE}
   await fs.promises.symlink(concreteWorkspacePath, workspacePath)
+  core.info(`ln -s ${concreteWorkspacePath} ${workspacePath}`)
 }
 
 export async function restoreWorkspace (): Promise<void> {
   const workspacePath = getWorkspacePath()
   // unlink ${GITHUB_WORKSPACE}
   await fs.promises.unlink(workspacePath)
+  core.info(`unlink ${workspacePath}`)
   // mv ${GITHUB_WORKSPACE}.bak ${GITHUB_WORKSPACE}
   await fs.promises.rename(`${workspacePath}.bak`, workspacePath)
+  core.info(`mv ${workspacePath}.bak ${workspacePath}`)
 }

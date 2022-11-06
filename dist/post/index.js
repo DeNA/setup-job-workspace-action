@@ -3257,11 +3257,12 @@ async function run() {
         await (0, workspace_1.restoreWorkspace)();
     }
     catch (error) {
+        core.error(JSON.stringify(error));
         if (error instanceof Error)
             core.setFailed(error.message);
     }
 }
-run().catch((error) => console.error(error));
+run().catch((error) => console.error(JSON.stringify(error)));
 
 
 /***/ }),
@@ -3318,11 +3319,11 @@ function getRunnerWorkspacePath() {
     return process.env.RUNNER_WORKSPACE;
 }
 function createDirName(context, workspaceName) {
-    if (workspaceName !== undefined)
+    core.debug(`workspaceName: ${workspaceName}`);
+    if (workspaceName !== '')
         return workspaceName;
-    // NOTE: これが本当に取れるかは若干怪しい気がする
-    const workflowYaml = context.payload.workflow;
-    core.notice(`workflowYaml: ${workflowYaml}`);
+    const workflowYaml = context.workflow;
+    core.debug(`workflowYaml: ${workflowYaml}`);
     const yamlExtName = path_1.default.extname(workflowYaml);
     const workflowYamlBaseName = path_1.default.basename(workflowYaml, yamlExtName);
     return `${workflowYamlBaseName}-${context.job}`;
@@ -3333,21 +3334,26 @@ async function replaceWorkspace(context, workspaceName) {
     const workspacePath = getWorkspacePath();
     const workspaceBakPath = workspacePath + '.bak';
     await io.mv(workspacePath, workspaceBakPath);
+    core.info(`mv ${workspacePath} ${workspaceBakPath}}`);
     // WORKFLOW_YAML=$(basename "${{ github.event.workflow }}" .yml)
     // TMP_DIR="${RUNNER_WORKSPACE}/${WORKFLOW_YAML}-${{ github.job }}"
     // mkdir -p ${TMP_DIR}
     const concreteWorkspacePath = path_1.default.join(getRunnerWorkspacePath(), createDirName(context, workspaceName));
     await io.mkdirP(concreteWorkspacePath);
+    core.info(`mkdir -p ${concreteWorkspacePath}`);
     // ln -s "${TMP_DIR}" ${GITHUB_WORKSPACE}
     await fs_1.default.promises.symlink(concreteWorkspacePath, workspacePath);
+    core.info(`ln -s ${concreteWorkspacePath} ${workspacePath}`);
 }
 exports.replaceWorkspace = replaceWorkspace;
 async function restoreWorkspace() {
     const workspacePath = getWorkspacePath();
     // unlink ${GITHUB_WORKSPACE}
     await fs_1.default.promises.unlink(workspacePath);
+    core.info(`unlink ${workspacePath}`);
     // mv ${GITHUB_WORKSPACE}.bak ${GITHUB_WORKSPACE}
     await fs_1.default.promises.rename(`${workspacePath}.bak`, workspacePath);
+    core.info(`mv ${workspacePath}.bak ${workspacePath}`);
 }
 exports.restoreWorkspace = restoreWorkspace;
 

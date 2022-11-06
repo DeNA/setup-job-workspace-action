@@ -4,16 +4,12 @@ import { replaceWorkspace } from './workspace'
 
 async function run (): Promise<void> {
   try {
-    core.debug('Main process')
-
-    const context = github.context
-
-    const workspaceName: string | undefined = core.getInput('workspace-name')
-    await replaceWorkspace(context, workspaceName)
+    const workspaceName: string = core.getInput('workspace-name')
+    await replaceWorkspace(github.context, workspaceName)
   } catch (error) {
-    console.dir(error)
+    core.error(JSON.stringify(error))
     if (error instanceof Error) core.setFailed(error.message)
   }
 }
 
-run().catch((error) => console.error(error))
+run().catch((error) => core.error(JSON.stringify(error)))
