@@ -44,10 +44,10 @@ test('replaceWorkspace() with workspaceName', async () => {
   const workspaceName = 'test-dir'
   await replaceWorkspace(contextMock, workspaceName)
 
-  const concreteWorkspacePath = path.join(process.env.RUNNER_WORKSPACE!, workspaceName)
+  const virtualWorkspacePath = path.join(process.env.RUNNER_WORKSPACE!, workspaceName)
 
   // /$RUNNER_WORKSPACE/{workspaceName}/ is exists
-  expect(fs.accessSync(concreteWorkspacePath)).toBeUndefined()
+  expect(fs.accessSync(virtualWorkspacePath)).toBeUndefined()
   // /$GITHUB_WORKSPACE.bak/ is not symlink
   expect(fs.lstatSync(`${process.env.GITHUB_WORKSPACE!}.bak`).isSymbolicLink()).toBe(false)
   // /$GITHUB_WORKSPACE is symlink
@@ -57,10 +57,10 @@ test('replaceWorkspace() with workspaceName', async () => {
 test('replaceWorkspace() with default input', async () => {
   await replaceWorkspace(contextMock, "")
 
-  const concreteWorkspacePath = path.join(process.env.RUNNER_WORKSPACE!, `${workflowName}-${jobName}`)
+  const virtualWorkspacePath = path.join(process.env.RUNNER_WORKSPACE!, `${workflowName}-${jobName}`)
 
   // /$RUNNER_WORKSPACE/{workspaceName}/ is exists
-  expect(fs.accessSync(concreteWorkspacePath)).toBeUndefined()
+  expect(fs.accessSync(virtualWorkspacePath)).toBeUndefined()
   // /$GITHUB_WORKSPACE.bak/ is not symlink
   expect(fs.lstatSync(`${process.env.GITHUB_WORKSPACE!}.bak`).isSymbolicLink()).toBe(false)
   // /$GITHUB_WORKSPACE is symlink
