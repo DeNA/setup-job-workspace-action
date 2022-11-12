@@ -1,105 +1,66 @@
-<p align="center">
-  <a href="https://github.com/actions/typescript-action/actions"><img alt="typescript-action status" src="https://github.com/actions/typescript-action/workflows/build-test/badge.svg"></a>
-</p>
+[![actions-test](https://github.com/Kesin11/setup-job-workspace-action/actions/workflows/actions-test.yml/badge.svg)](https://github.com/Kesin11/setup-job-workspace-action/actions/workflows/actions-test.yml)
+[![build-test](https://github.com/Kesin11/setup-job-workspace-action/actions/workflows/test.yml/badge.svg)](https://github.com/Kesin11/setup-job-workspace-action/actions/workflows/test.yml)
 
-# Create a JavaScript Action using TypeScript
+# setup-job-workspace-action
+An action creating virtual workspace directory for each jobs. It useful when using self-hosted runner with huge size of repository.
 
-Use this template to bootstrap the creation of a TypeScript action.:rocket:
-
-This template includes compilation support, tests, a validation workflow, publishing, and versioning guidance.  
-
-If you are new, there's also a simpler introduction.  See the [Hello World JavaScript Action](https://github.com/actions/hello-world-javascript-action)
-
-## Create an action from this template
-
-Click the `Use this Template` and provide the new repo details for your action
-
-## Code in Main
-
-> First, you'll need to have a reasonably modern version of `node` handy. This won't work with versions older than 9, for instance.
-
-Install the dependencies  
-```bash
-$ npm install
-```
-
-Build the typescript and package it for distribution
-```bash
-$ npm run build && npm run package
-```
-
-Run the tests :heavy_check_mark:  
-```bash
-$ npm test
-
- PASS  ./index.test.js
-  ✓ throws invalid number (3ms)
-  ✓ wait 500 ms (504ms)
-  ✓ test runs (95ms)
-
-...
-```
-
-## Change action.yml
-
-The action.yml defines the inputs and output for your action.
-
-Update the action.yml with your name, description, inputs and outputs for your action.
-
-See the [documentation](https://help.github.com/en/articles/metadata-syntax-for-github-actions)
-
-## Change the Code
-
-Most toolkit and CI/CD operations involve async operations so the action is run in an async function.
-
-```javascript
-import * as core from '@actions/core';
-...
-
-async function run() {
-  try { 
-      ...
-  } 
-  catch (error) {
-    core.setFailed(error.message);
-  }
-}
-
-run()
-```
-
-See the [toolkit documentation](https://github.com/actions/toolkit/blob/master/README.md#packages) for the various packages.
-
-## Publish to a distribution branch
-
-Actions are run from GitHub repos so we will checkin the packed dist folder. 
-
-Then run [ncc](https://github.com/zeit/ncc) and push the results:
-```bash
-$ npm run package
-$ git add dist
-$ git commit -a -m "prod dependencies"
-$ git push origin releases/v1
-```
-
-Note: We recommend using the `--license` option for ncc, which will create a license file for all of the production node modules used in your project.
-
-Your action is now published! :rocket: 
-
-See the [versioning documentation](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
-
-## Validate
-
-You can now validate the action by referencing `./` in a workflow in your repo (see [test.yml](.github/workflows/test.yml))
-
+## Usage
 ```yaml
-uses: ./
-with:
-  milliseconds: 1000
+jobs:
+  default:
+    runs-on: [self-hosted]
+    steps:
+      # Use before actions/checkout
+      - uses: Kesin11/setup-job-workspace-action@v1
+      - uses: actions/checkout@v3
+
+      # ... your build steps
+
+  given_dir_name:
+    runs-on: [self-hosted]
+    steps:
+      # Use before actions/checkout
+      - uses: Kesin11/setup-job-workspace-action@v1
+        with:
+          workspace_name: foo_bar_workspace
+      - uses: actions/checkout@v3
+
+      # ... your build steps
 ```
 
-See the [actions tab](https://github.com/actions/typescript-action/actions) for runs of this action! :rocket:
+### Options
+See [action.yml](./action.yml)
 
-## Usage:
+## How it works
+GitHub Actions runner has only one workspace directory per repository ($GITHUB_WORKSPACE). That path is defined by repository name, so for example the workspace path of this repository is `/home/runner/work/setup-job-workspace-action/setup-job-workspace-action` in GitHub hosted Ubuntu runner.
 
-After testing you can [create a v1 tag](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md) to reference the stable and latest V1 action
+This action create new virtual workspace directory and replace $GITHUB_WORKSPACE to symlink that target to it. So GitHub Actions runner treats new directory as job workspace, if creating new directory per jobs, we can realize to create workspace per job like Jenkins.
+
+That hacks can make by two phase and few of simple commands.
+
+### Phase 1: Create virtual workspace directory and symlink before `actions/checkout`.
+
+```bash
+mv ${GITHUB_WORKSPACE} ${GITHUB_WORKSPACE}.bak
+TMP_DIR="${RUNNER_WORKSPACE}/${WORKFLOW_YAML}-${{ github.job }}"
+mkdir -p ${TMP_DIR}
+ln -s "${TMP_DIR}" ${GITHUB_WORKSPACE}
+```
+
+### Phase 2: Restore original $GITHUB_WORKSPACE after complete job.
+
+```bash
+unlink ${GITHUB_WORKSPACE}
+mv ${GITHUB_WORKSPACE}.bak ${GITHUB_WORKSPACE}
+```
+
+## Why need it
+When using GitHub hosted runner, its provided new VM for each jobs. On the other hand, self-hosted runner run on same machine and also reused same directory as workspace ($GITHUB_WORKSPACE). `actions/checkout` clean workspace before checkout using `git clean -ffdx` in default, it works fine with common size of repository.
+
+However, when repository size is too large it has problem. Some of build workflow will download large binary tool for current build and output large build cache for next build, so `actions/checkout` default cleaning is insufficient sometimes.
+
+And also some of git options for example `sparse checkout` is very efficient for job that only needs few of files in large repository. However, self-hosted runner has just only workspace directory for a repository and `actions/checkout` does not supports some of advanced git options, large repository that has many GitHub Actions jobs may have git performance issue.
+
+If jobs can have each workspace, job can reuse .git that created by `git clone` with advanced options. It resolves git performance issue. Jenkins has been used same directory structure and it has been succeed. `setup-job-workspace-action` also realize it in GitHub Actions.
+
+## Development
