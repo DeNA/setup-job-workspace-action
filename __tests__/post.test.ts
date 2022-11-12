@@ -35,7 +35,7 @@ afterEach(async () => {
 test('restoreWorkspace()', async () => {
   await restoreWorkspace()
 
-  const concreteWorkspacePath = path.join(process.env.RUNNER_WORKSPACE!, `${workflowName}-${jobName}`)
+  const virtualWorkspacePath = path.join(process.env.RUNNER_WORKSPACE!, `${workflowName}-${jobName}`)
 
   // /$GITHUB_WORKSPACE.bak/ is not exists
   expect(() => {
@@ -43,6 +43,6 @@ test('restoreWorkspace()', async () => {
   }).toThrow()
   // /$GITHUB_WORKSPACE/ is not symlink
   expect(fs.lstatSync(`${process.env.GITHUB_WORKSPACE!}`).isSymbolicLink()).toBe(false)
-  // concrete workspace is exists
-  expect(fs.accessSync(concreteWorkspacePath)).toBeUndefined()
+  // virtual workspace is exists
+  expect(fs.accessSync(virtualWorkspacePath)).toBeUndefined()
 })

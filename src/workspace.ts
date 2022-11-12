@@ -41,13 +41,13 @@ export async function replaceWorkspace (context: Context, workspaceName: string)
   // WORKFLOW_YAML=$(basename "${{ github.event.workflow }}" .yml)
   // TMP_DIR="${RUNNER_WORKSPACE}/${WORKFLOW_YAML}-${{ github.job }}"
   // mkdir -p ${TMP_DIR}
-  const concreteWorkspacePath = path.join(getRunnerWorkspacePath(), createDirName(context, workspaceName))
-  await io.mkdirP(concreteWorkspacePath)
-  core.info(`mkdir -p ${concreteWorkspacePath}`)
+  const virtualWorkspacePath = path.join(getRunnerWorkspacePath(), createDirName(context, workspaceName))
+  await io.mkdirP(virtualWorkspacePath)
+  core.info(`mkdir -p ${virtualWorkspacePath}`)
 
   // ln -s "${TMP_DIR}" ${GITHUB_WORKSPACE}
-  await fs.promises.symlink(concreteWorkspacePath, workspacePath)
-  core.info(`ln -s ${concreteWorkspacePath} ${workspacePath}`)
+  await fs.promises.symlink(virtualWorkspacePath, workspacePath)
+  core.info(`ln -s ${virtualWorkspacePath} ${workspacePath}`)
 }
 
 export async function restoreWorkspace (): Promise<void> {
