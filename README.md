@@ -64,3 +64,16 @@ And also some of git options for example `sparse checkout` is very efficient for
 If jobs can have each workspace, job can reuse .git that created by `git clone` with advanced options. It resolves git performance issue. Jenkins has been used same directory structure and it has been succeed. `setup-job-workspace-action` also realize it in GitHub Actions.
 
 ## Development
+```bash
+npm run build
+npm run lint
+npm run test
+```
+
+You should bundle to update `dist` then commit them before create pull-request.
+
+```bash
+npm run package
+#or
+npm run all
+```
