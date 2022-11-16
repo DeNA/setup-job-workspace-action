@@ -22,6 +22,7 @@ jobs:
       # Use before actions/checkout
       - uses: Kesin11/setup-job-workspace-action@v1
         with:
+          # You can change workspace name from default: ${workspace-yaml-name}-${job-name}
           workspace_name: foo_bar_workspace
       - uses: actions/checkout@v3
 
