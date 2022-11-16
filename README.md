@@ -32,11 +32,11 @@ jobs:
 See [action.yml](./action.yml)
 
 ## How it works
-GitHub Actions runner has only one workspace directory per repository ($GITHUB_WORKSPACE). That path is defined by repository name, so for example the workspace path of this repository is `/home/runner/work/setup-job-workspace-action/setup-job-workspace-action` in GitHub hosted Ubuntu runner.
+GitHub Actions runner only has one workspace directory per repository ($GITHUB_WORKSPACE). That path is defined by the repository name, for example the workspace path of this repository is `/home/runner/work/setup-job-workspace-action/setup-job-workspace-action` in GitHub hosted Ubuntu runner.
 
-This action creates a new virtual workspace directory and replaces $GITHUB_WORKSPACE to symlink that target it. So GitHub Actions runner treats the new virtual workspace as a job workspace, if creating a new virtual workspace per job, we can realize creating a workspace per job like Jenkins.
+This action creates a new virtual workspace directory and replaces $GITHUB_WORKSPACE as symlink that target to it. So GitHub Actions runner treats the new virtual workspace as a job workspace, it is possible to separate workspace for each job like Jenkins by creating a virtual workspace per job.
 
-That hack can make in two phases and a few simple commands.
+That hack can make in two phases that have a few simple commands.
 
 ### Phase 1: Create virtual workspace directory and symlink before `actions/checkout`.
 
@@ -55,13 +55,13 @@ mv ${GITHUB_WORKSPACE}.bak ${GITHUB_WORKSPACE}
 ```
 
 ## Why need it
-When using GitHub-hosted runner, it provided a new VM for each job. On the other hand, self-hosted runner runs on the same machine and also reused the same directory as job workspace ($GITHUB_WORKSPACE). `actions/checkout` cleans workspace before checkout using `git clean -ffdx` in default, it works fine with common size of repository.
+When using GitHub-hosted runner, a new VM is given for each job. On the other hand, self-hosted runner runs on the same machine, a single workspace($GITHUB_WORKSPACE) is used for jobs that in the same repository. `actions/checkout` cleans workspace before checkout using `git clean -ffdx` in default, it works fine for a normal sized repository.
 
-However, when repository size is too large it has some problems. Some of the workflows will download large binary tools for a current build and output large build cache for the next build, so `actions/checkout` default cleaning is inefficient sometimes.
+However, there are some problems when repository size is too large. Some of the workflows will download large binary tools for a current build and output large build cache for the next build, so `actions/checkout` default cleaning is inefficient sometimes.
 
-And also some of git options for example `sparse checkout` is very efficient for jobs that only need a few files in large repository. However, self-hosted runner has just only a workspace directory for a repository, and `actions/checkout` does not support some advanced git options, large repository that has many GitHub Actions jobs may have git performance issues.
+And also some git options like `sparse checkout` are very efficient if your job only need a few files and size of repository is too large. However, `git clone` and `git fetch` performance can be problem because self-hosted runner has only one workspace and `actions/checkout` does not support some advanced git options.
 
-If jobs can have each workspace, a job can reuse .git that was created by `git clone` with advanced options. It resolves git performance issues. Jenkins has been using same directory of structure and it has succeeded. `setup-job-workspace-action` also realizes it in GitHub Actions.
+This problem can be solved if each job has its own workspace and can reuse `.git/` created by advanced git options. Jenkins has been successful in this way for a long time. `setup-job-workspace-action` also realizes it on GitHub Actions.
 
 ## Development
 ```bash
