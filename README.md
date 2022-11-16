@@ -2,7 +2,7 @@
 [![build-test](https://github.com/Kesin11/setup-job-workspace-action/actions/workflows/test.yml/badge.svg)](https://github.com/Kesin11/setup-job-workspace-action/actions/workflows/test.yml)
 
 # setup-job-workspace-action
-An action creating virtual workspace directory for each jobs. It useful when using self-hosted runner with huge size of repository.
+An action creating a virtual workspace directory for each job. It is useful when using self-hosted runner with large size of repository.
 
 ## Usage
 ```yaml
@@ -34,9 +34,9 @@ See [action.yml](./action.yml)
 ## How it works
 GitHub Actions runner has only one workspace directory per repository ($GITHUB_WORKSPACE). That path is defined by repository name, so for example the workspace path of this repository is `/home/runner/work/setup-job-workspace-action/setup-job-workspace-action` in GitHub hosted Ubuntu runner.
 
-This action create new virtual workspace directory and replace $GITHUB_WORKSPACE to symlink that target to it. So GitHub Actions runner treats new directory as job workspace, if creating new directory per jobs, we can realize to create workspace per job like Jenkins.
+This action creates a new virtual workspace directory and replaces $GITHUB_WORKSPACE to symlink that target it. So GitHub Actions runner treats the new virtual workspace as a job workspace, if creating a new virtual workspace per job, we can realize creating a workspace per job like Jenkins.
 
-That hacks can make by two phase and few of simple commands.
+That hack can make in two phases and a few simple commands.
 
 ### Phase 1: Create virtual workspace directory and symlink before `actions/checkout`.
 
@@ -55,13 +55,13 @@ mv ${GITHUB_WORKSPACE}.bak ${GITHUB_WORKSPACE}
 ```
 
 ## Why need it
-When using GitHub hosted runner, its provided new VM for each jobs. On the other hand, self-hosted runner run on same machine and also reused same directory as workspace ($GITHUB_WORKSPACE). `actions/checkout` clean workspace before checkout using `git clean -ffdx` in default, it works fine with common size of repository.
+When using GitHub-hosted runner, it provided a new VM for each job. On the other hand, self-hosted runner runs on the same machine and also reused the same directory as job workspace ($GITHUB_WORKSPACE). `actions/checkout` cleans workspace before checkout using `git clean -ffdx` in default, it works fine with common size of repository.
 
-However, when repository size is too large it has problem. Some of build workflow will download large binary tool for current build and output large build cache for next build, so `actions/checkout` default cleaning is insufficient sometimes.
+However, when repository size is too large it has some problems. Some of the workflows will download large binary tools for a current build and output large build cache for the next build, so `actions/checkout` default cleaning is inefficient sometimes.
 
-And also some of git options for example `sparse checkout` is very efficient for job that only needs few of files in large repository. However, self-hosted runner has just only workspace directory for a repository and `actions/checkout` does not supports some of advanced git options, large repository that has many GitHub Actions jobs may have git performance issue.
+And also some of git options for example `sparse checkout` is very efficient for jobs that only need a few files in large repository. However, self-hosted runner has just only a workspace directory for a repository, and `actions/checkout` does not support some advanced git options, large repository that has many GitHub Actions jobs may have git performance issues.
 
-If jobs can have each workspace, job can reuse .git that created by `git clone` with advanced options. It resolves git performance issue. Jenkins has been used same directory structure and it has been succeed. `setup-job-workspace-action` also realize it in GitHub Actions.
+If jobs can have each workspace, a job can reuse .git that was created by `git clone` with advanced options. It resolves git performance issues. Jenkins has been using same directory of structure and it has succeeded. `setup-job-workspace-action` also realizes it in GitHub Actions.
 
 ## Development
 ```bash
