@@ -3334,7 +3334,7 @@ async function replaceWorkspace(context, workspaceName) {
     const workspacePath = getWorkspacePath();
     const workspaceBakPath = workspacePath + '.bak';
     await io.mv(workspacePath, workspaceBakPath);
-    core.info(`mv ${workspacePath} ${workspaceBakPath}}`);
+    core.info(`mv ${workspacePath} ${workspaceBakPath}`);
     // WORKFLOW_YAML=$(basename "${{ github.event.workflow }}" .yml)
     // TMP_DIR="${RUNNER_WORKSPACE}/${WORKFLOW_YAML}-${{ github.job }}"
     // mkdir -p ${TMP_DIR}
