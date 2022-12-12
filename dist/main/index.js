@@ -10139,7 +10139,7 @@ function getRunnerWorkspacePath() {
     return process.env.RUNNER_WORKSPACE;
 }
 function escapeDirName(rawDirName) {
-    return encodeURI(rawDirName);
+    return rawDirName.trim().replace(/\s/g, '_');
 }
 function createDirName(context, workspaceName) {
     core.debug(`workspaceName: ${workspaceName}`);
