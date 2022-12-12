@@ -10138,15 +10138,18 @@ function getRunnerWorkspacePath() {
         throw new Error('env RUNNER_WORKSPACE is undefined!');
     return process.env.RUNNER_WORKSPACE;
 }
+function escapeDirName(rawDirName) {
+    return encodeURI(rawDirName);
+}
 function createDirName(context, workspaceName) {
     core.debug(`workspaceName: ${workspaceName}`);
     if (workspaceName !== '')
-        return workspaceName;
+        return escapeDirName(workspaceName);
     const workflowYaml = context.workflow;
     core.debug(`workflowYaml: ${workflowYaml}`);
     const yamlExtName = path_1.default.extname(workflowYaml);
     const workflowYamlBaseName = path_1.default.basename(workflowYaml, yamlExtName);
-    return `${workflowYamlBaseName}-${context.job}`;
+    return escapeDirName(`${workflowYamlBaseName}-${context.job}`);
 }
 exports.createDirName = createDirName;
 async function replaceWorkspace(context, workspaceName) {
