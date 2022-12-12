@@ -18,9 +18,13 @@ function getRunnerWorkspacePath (): string {
   return process.env.RUNNER_WORKSPACE
 }
 
+function escapeDirName (rawDirName: string): string {
+  return encodeURI(rawDirName)
+}
+
 export function createDirName (context: Context, workspaceName: string): string {
   core.debug(`workspaceName: ${workspaceName}`)
-  if (workspaceName !== '') return workspaceName
+  if (workspaceName !== '') return escapeDirName(workspaceName)
 
   const workflowYaml = context.workflow
   core.debug(`workflowYaml: ${workflowYaml}`)
@@ -28,7 +32,7 @@ export function createDirName (context: Context, workspaceName: string): string 
   const yamlExtName = path.extname(workflowYaml)
   const workflowYamlBaseName = path.basename(workflowYaml, yamlExtName)
 
-  return `${workflowYamlBaseName}-${context.job}`
+  return escapeDirName(`${workflowYamlBaseName}-${context.job}`)
 }
 
 export async function replaceWorkspace (context: Context, workspaceName: string): Promise<void> {
