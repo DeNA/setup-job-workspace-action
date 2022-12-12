@@ -19,7 +19,7 @@ function getRunnerWorkspacePath (): string {
 }
 
 function escapeDirName (rawDirName: string): string {
-  return encodeURI(rawDirName)
+  return rawDirName.trim().replace(/\s/g, '_')
 }
 
 export function createDirName (context: Context, workspaceName: string): string {

@@ -38,7 +38,7 @@ test('createDirName() returns workspaceName', async () => {
 test('createDirName() returns escaped workspaceName', async () => {
   const workspaceName = 'test dir'
   const actual = createDirName(contextMock, workspaceName)
-  await expect(actual).toEqual('test%20dir')
+  await expect(actual).toEqual('test_dir')
 })
 
 test('createDirName() returns default name', async () => {
@@ -55,7 +55,7 @@ test('createDirName() returns escaped default name', async () => {
   } as unknown as Context
 
   const actual = createDirName(contextMock, "")
-  await expect(actual).toEqual(`${workflowName}-test%20Job`)
+  await expect(actual).toEqual(`${workflowName}-test_Job`)
 })
 
 test('replaceWorkspace() with workspaceName', async () => {
