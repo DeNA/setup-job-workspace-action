@@ -10,6 +10,7 @@
   "scripts": {
     "build": "tsc",
     "package": "ncc build --source-map -o dist/main src/main.ts && ncc build --source-map -o dist/post src/post.ts",
+    "package:commit": "npm run package && git add -u dist && git commit -m 'npm run package'",
     "lint": "ts-standard src/**/*",
     "lint:fix": "ts-standard --fix src/**/*",
     "test": "jest",
