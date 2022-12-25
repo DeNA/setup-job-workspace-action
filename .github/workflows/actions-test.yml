@@ -1,4 +1,4 @@
-name: 'actions-test'
+name: 'Actions integrate test'
 on:
   pull_request:
   push:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  default:
+  default_name:
     strategy:
       matrix:
         runner: [ubuntu-latest, macos-latest]
@@ -29,8 +29,8 @@ jobs:
       - name: Created workspace is not symlkink
         # Default dir name: ${YAML_NAME}-${JOB_NAME}
         run: |
-          test -d $RUNNER_WORKSPACE/actions-test-default
-          if [ -L $RUNNER_WORKSPACE/actions-test-default ]; then
+          test -d $RUNNER_WORKSPACE/Actions-test-default_name
+          if [ -L $RUNNER_WORKSPACE/Actions-test-default_name ]; then
             exit 1
           fi
 
