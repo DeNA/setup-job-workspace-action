@@ -3,20 +3,7 @@ import fs from 'fs'
 import * as core from '@actions/core'
 import * as io from '@actions/io'
 import { Context } from '@actions/github/lib/context'
-
-// /_work/self-hosted-sandbox/self-hosted-sandbox
-export function getWorkspacePath (): string {
-  if (process.env.GITHUB_WORKSPACE === undefined) {
-    throw new Error('env GITHUB_WORKSPACE is undefined!')
-  }
-  return process.env.GITHUB_WORKSPACE
-}
-
-// /_work/self-hosted-sandbox
-function getRunnerWorkspacePath (): string {
-  if (process.env.RUNNER_WORKSPACE === undefined) throw new Error('env RUNNER_WORKSPACE is undefined!')
-  return process.env.RUNNER_WORKSPACE
-}
+import { getRunnerWorkspacePath, getWorkflowName, getWorkspacePath } from './github_env'
 
 function escapeDirName (rawDirName: string): string {
   return rawDirName.trim().replace(/\s/g, '_')
@@ -26,13 +13,8 @@ export function createDirName (context: Context, workspaceName: string): string 
   core.debug(`workspaceName: ${workspaceName}`)
   if (workspaceName !== '') return escapeDirName(workspaceName)
 
-  const workflowYaml = context.workflow
-  core.debug(`workflowYaml: ${workflowYaml}`)
-
-  const yamlExtName = path.extname(workflowYaml)
-  const workflowYamlBaseName = path.basename(workflowYaml, yamlExtName)
-
-  return escapeDirName(`${workflowYamlBaseName}-${context.job}`)
+  const workflowName = getWorkflowName()
+  return escapeDirName(`${workflowName}-${context.job}`)
 }
 
 export async function replaceWorkspace (context: Context, workspaceName: string): Promise<void> {

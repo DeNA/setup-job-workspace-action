@@ -3220,6 +3220,82 @@ exports["default"] = _default;
 
 /***/ }),
 
+/***/ 237:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getWorkflowName = exports.getRunnerWorkspacePath = exports.getWorkspacePath = void 0;
+const path_1 = __importDefault(__nccwpck_require__(17));
+const core = __importStar(__nccwpck_require__(186));
+// /_work/self-hosted-sandbox/self-hosted-sandbox
+function getWorkspacePath() {
+    if (process.env.GITHUB_WORKSPACE === undefined) {
+        throw new Error('env GITHUB_WORKSPACE is undefined!');
+    }
+    return process.env.GITHUB_WORKSPACE;
+}
+exports.getWorkspacePath = getWorkspacePath;
+// /_work/self-hosted-sandbox
+function getRunnerWorkspacePath() {
+    if (process.env.RUNNER_WORKSPACE === undefined)
+        throw new Error('env RUNNER_WORKSPACE is undefined!');
+    return process.env.RUNNER_WORKSPACE;
+}
+exports.getRunnerWorkspacePath = getRunnerWorkspacePath;
+function getWorkflowName() {
+    const githubWorkflowRef = process.env.GITHUB_WORKFLOW_REF;
+    if (githubWorkflowRef != null) {
+        // GITHUB_WORKFLOW_REF == ${{ github.workflow_ref }}:  `"Kesin11/setup-job-workspace-action/.github/workflows/test.yml@refs/heads/test_branch`,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const workflowYaml = githubWorkflowRef.match(/(\w+\.ya?ml)/)[0];
+        core.debug(`Found GITHUB_WORKFLOW_REF. workflow yaml: ${workflowYaml}`);
+        const yamlExtName = path_1.default.extname(workflowYaml);
+        return path_1.default.basename(workflowYaml, yamlExtName);
+    }
+    else if (process.env.GITHUB_WORKFLOW != null) {
+        // GITHUB_WORKFLOW_REF does not appear if use old runner that before actions/runner@v2.300.0
+        // So it fallback for some case that must use old runner (e.g. GHES).
+        core.debug(`Found GITHUB_WORKFLOW. workflow name: ${process.env.GITHUB_WORKFLOW}`);
+        // GITHUB_WORKFLOW == ${{ github.workflow }} is `name` in yml: `name: 'build-test'`
+        return process.env.GITHUB_WORKFLOW;
+    }
+    else {
+        throw new Error('Both env GITHUB_WORKFLOW_REF and GITHUB_WORKFLOW are undefined!');
+    }
+}
+exports.getWorkflowName = getWorkflowName;
+
+
+/***/ }),
+
 /***/ 51:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -3299,25 +3375,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.restoreWorkspace = exports.replaceWorkspace = exports.createDirName = exports.getWorkspacePath = void 0;
+exports.restoreWorkspace = exports.replaceWorkspace = exports.createDirName = void 0;
 const path_1 = __importDefault(__nccwpck_require__(17));
 const fs_1 = __importDefault(__nccwpck_require__(147));
 const core = __importStar(__nccwpck_require__(186));
 const io = __importStar(__nccwpck_require__(436));
-// /_work/self-hosted-sandbox/self-hosted-sandbox
-function getWorkspacePath() {
-    if (process.env.GITHUB_WORKSPACE === undefined) {
-        throw new Error('env GITHUB_WORKSPACE is undefined!');
-    }
-    return process.env.GITHUB_WORKSPACE;
-}
-exports.getWorkspacePath = getWorkspacePath;
-// /_work/self-hosted-sandbox
-function getRunnerWorkspacePath() {
-    if (process.env.RUNNER_WORKSPACE === undefined)
-        throw new Error('env RUNNER_WORKSPACE is undefined!');
-    return process.env.RUNNER_WORKSPACE;
-}
+const github_env_1 = __nccwpck_require__(237);
 function escapeDirName(rawDirName) {
     return rawDirName.trim().replace(/\s/g, '_');
 }
@@ -3325,23 +3388,20 @@ function createDirName(context, workspaceName) {
     core.debug(`workspaceName: ${workspaceName}`);
     if (workspaceName !== '')
         return escapeDirName(workspaceName);
-    const workflowYaml = context.workflow;
-    core.debug(`workflowYaml: ${workflowYaml}`);
-    const yamlExtName = path_1.default.extname(workflowYaml);
-    const workflowYamlBaseName = path_1.default.basename(workflowYaml, yamlExtName);
-    return escapeDirName(`${workflowYamlBaseName}-${context.job}`);
+    const workflowName = (0, github_env_1.getWorkflowName)();
+    return escapeDirName(`${workflowName}-${context.job}`);
 }
 exports.createDirName = createDirName;
 async function replaceWorkspace(context, workspaceName) {
     // mv ${GITHUB_WORKSPACE} ${GITHUB_WORKSPACE}.bak
-    const workspacePath = getWorkspacePath();
+    const workspacePath = (0, github_env_1.getWorkspacePath)();
     const workspaceBakPath = workspacePath + '.bak';
     await io.mv(workspacePath, workspaceBakPath);
     core.info(`mv ${workspacePath} ${workspaceBakPath}`);
     // WORKFLOW_YAML=$(basename "${{ github.event.workflow }}" .yml)
     // TMP_DIR="${RUNNER_WORKSPACE}/${WORKFLOW_YAML}-${{ github.job }}"
     // mkdir -p ${TMP_DIR}
-    const virtualWorkspacePath = path_1.default.join(getRunnerWorkspacePath(), createDirName(context, workspaceName));
+    const virtualWorkspacePath = path_1.default.join((0, github_env_1.getRunnerWorkspacePath)(), createDirName(context, workspaceName));
     await io.mkdirP(virtualWorkspacePath);
     core.info(`mkdir -p ${virtualWorkspacePath}`);
     // ln -s "${TMP_DIR}" ${GITHUB_WORKSPACE}
@@ -3350,7 +3410,7 @@ async function replaceWorkspace(context, workspaceName) {
 }
 exports.replaceWorkspace = replaceWorkspace;
 async function restoreWorkspace() {
-    const workspacePath = getWorkspacePath();
+    const workspacePath = (0, github_env_1.getWorkspacePath)();
     // unlink ${GITHUB_WORKSPACE}
     await fs_1.default.promises.unlink(workspacePath);
     core.info(`unlink ${workspacePath}`);
