@@ -7,8 +7,11 @@ import { replaceWorkspace, restoreWorkspace } from '../src/workspace'
 
 const workflowName = 'test'
 const jobName = 'testJob'
+const githubWorkflow = "Test workflow"
+const githubWorkflowRef = `"Kesin11/setup-job-workspace-action/.github/workflows/${workflowName}.yml@refs/heads/test_branch`
 const contextMock = {
-  workflow: `./.github/workflows/${workflowName}.yml`,
+  workflow: githubWorkflow, // It same as `name` in workflow.yml. It is confusing with `workflow_ref`, so include it in mock.
+  workflow_ref: githubWorkflowRef,
   job: jobName
 } as unknown as Context
 
@@ -19,7 +22,9 @@ beforeEach(async () => {
   process.env = {
     ...origEnv,
     RUNNER_WORKSPACE: `${path.join(tmpDirPath, 'testRepo')}`,
-    GITHUB_WORKSPACE: `${path.join(tmpDirPath, 'testRepo', 'testRepo')}`
+    GITHUB_WORKSPACE: `${path.join(tmpDirPath, 'testRepo', 'testRepo')}`,
+    GITHUB_WORKFLOW: githubWorkflow,
+    GITHUB_WORKFLOW_REF: githubWorkflowRef,
   }
   await fs.promises.mkdir(process.env.GITHUB_WORKSPACE!, { recursive: true })
 

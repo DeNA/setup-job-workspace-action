@@ -18,6 +18,28 @@ function getRunnerWorkspacePath (): string {
   return process.env.RUNNER_WORKSPACE
 }
 
+function getWorkflowName(): string {
+  const githubWorkflowRef = process.env.GITHUB_WORKFLOW_REF
+  if (githubWorkflowRef) {
+    // GITHUB_WORKFLOW_REF == ${{ github.workflow_ref }}:  `"Kesin11/setup-job-workspace-action/.github/workflows/test.yml@refs/heads/test_branch`,
+    const workflowYaml = githubWorkflowRef.match(/(\w+\.ya?ml)/)![0]
+    core.debug(`Found GITHUB_WORKFLOW_REF. workflow yaml: ${workflowYaml}`)
+
+    const yamlExtName = path.extname(workflowYaml)
+    return path.basename(workflowYaml, yamlExtName)
+  }
+  // GITHUB_WORKFLOW_REF does not appear if use old runner that before actions/runner@v2.300.0 
+  // So it fallback for some case that must use old runner (e.g. GHES).
+  else if (process.env.GITHUB_WORKFLOW) {
+    core.debug(`Found GITHUB_WORKFLOW. workflow name: ${process.env.GITHUB_WORKFLOW}`)
+    // GITHUB_WORKFLOW == ${{ github.workflow }} is `name` in yml: `name: 'build-test'`
+    return process.env.GITHUB_WORKFLOW
+  }
+  else {
+    throw new Error('Both env GITHUB_WORKFLOW_REF and GITHUB_WORKFLOW are undefined!')
+  }
+}
+
 function escapeDirName (rawDirName: string): string {
   return rawDirName.trim().replace(/\s/g, '_')
 }
@@ -26,13 +48,8 @@ export function createDirName (context: Context, workspaceName: string): string 
   core.debug(`workspaceName: ${workspaceName}`)
   if (workspaceName !== '') return escapeDirName(workspaceName)
 
-  const workflowYaml = context.workflow
-  core.debug(`workflowYaml: ${workflowYaml}`)
-
-  const yamlExtName = path.extname(workflowYaml)
-  const workflowYamlBaseName = path.basename(workflowYaml, yamlExtName)
-
-  return escapeDirName(`${workflowYamlBaseName}-${context.job}`)
+  const workflowName = getWorkflowName()
+  return escapeDirName(`${workflowName}-${context.job}`)
 }
 
 export async function replaceWorkspace (context: Context, workspaceName: string): Promise<void> {
