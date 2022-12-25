@@ -3272,16 +3272,17 @@ function getRunnerWorkspacePath() {
 exports.getRunnerWorkspacePath = getRunnerWorkspacePath;
 function getWorkflowName() {
     const githubWorkflowRef = process.env.GITHUB_WORKFLOW_REF;
-    if (githubWorkflowRef) {
+    if (githubWorkflowRef != null) {
         // GITHUB_WORKFLOW_REF == ${{ github.workflow_ref }}:  `"Kesin11/setup-job-workspace-action/.github/workflows/test.yml@refs/heads/test_branch`,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const workflowYaml = githubWorkflowRef.match(/(\w+\.ya?ml)/)[0];
         core.debug(`Found GITHUB_WORKFLOW_REF. workflow yaml: ${workflowYaml}`);
         const yamlExtName = path_1.default.extname(workflowYaml);
         return path_1.default.basename(workflowYaml, yamlExtName);
     }
-    // GITHUB_WORKFLOW_REF does not appear if use old runner that before actions/runner@v2.300.0 
-    // So it fallback for some case that must use old runner (e.g. GHES).
-    else if (process.env.GITHUB_WORKFLOW) {
+    else if (process.env.GITHUB_WORKFLOW != null) {
+        // GITHUB_WORKFLOW_REF does not appear if use old runner that before actions/runner@v2.300.0
+        // So it fallback for some case that must use old runner (e.g. GHES).
         core.debug(`Found GITHUB_WORKFLOW. workflow name: ${process.env.GITHUB_WORKFLOW}`);
         // GITHUB_WORKFLOW == ${{ github.workflow }} is `name` in yml: `name: 'build-test'`
         return process.env.GITHUB_WORKFLOW;
