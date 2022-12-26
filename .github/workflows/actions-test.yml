@@ -27,7 +27,8 @@ jobs:
       - name: $GITHUB_WORKSPACE.bak is exists 
         run: test -d ${GITHUB_WORKSPACE}.bak
       - name: Created workspace is not symlkink
-        # Default dir name: ${YAML_NAME}-${JOB_NAME}
+        # Default dir name: ${workflow-yaml-name}-${job-name}
+        # But github hosted runner still use v2.299.1 at 2022/12/26, so this test use ${workflow-name}-${job-name}
         run: |
           test -d $RUNNER_WORKSPACE/actions_integrate_test-default_name
           if [ -L $RUNNER_WORKSPACE/actions_integrate_test-default_name ]; then
@@ -70,7 +71,7 @@ jobs:
         uses: actions/checkout@v3
         if: ${{ always() }}
 
-  default_name_with_prefix_suffix:
+  workspace_name_with_prefix_suffix:
     strategy:
       matrix:
         runner: [ubuntu-latest, macos-latest]
@@ -80,14 +81,14 @@ jobs:
       - uses: actions/checkout@v3
       - uses: ./
         with:
+          workspace-name: "test-dir"
           prefix: "Prefix-"
           suffix: "-Suffix"
 
       - name: Created workspace is not symlkink
-        # Default dir name: ${YAML_NAME}-${JOB_NAME}
         run: |
-          test -d $RUNNER_WORKSPACE/prefix-actions_integrate_test-default_name-suffix
-          if [ -L $RUNNER_WORKSPACE/prefix-actions_integrate_test-default_name-suffix ]; then
+          test -d $RUNNER_WORKSPACE/prefix-test-dir-suffix
+          if [ -L $RUNNER_WORKSPACE/prefix-test-dir-suffix ]; then
             exit 1
           fi
 
