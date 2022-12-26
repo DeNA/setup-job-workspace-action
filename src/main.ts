@@ -7,7 +7,7 @@ async function run (): Promise<void> {
     const inputs: InputOptions = {
       workspaceName: core.getInput('workspace-name'),
       prefix: core.getInput('prefix'),
-      suffix: core.getInput('suffix'),
+      suffix: core.getInput('suffix')
     }
     await replaceWorkspace(github.context, inputs)
   } catch (error) {

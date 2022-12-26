@@ -17,10 +17,10 @@ export function createDirName (context: Context, workspaceName: string, prefix: 
   return escapeDirName(`${prefix}${workflowName}-${context.job}${suffix}`)
 }
 
-export type InputOptions = {
-  workspaceName: string,
-  prefix: string,
-  suffix: string,
+export interface InputOptions {
+  workspaceName: string
+  prefix: string
+  suffix: string
 }
 export async function replaceWorkspace (context: Context, inputs: InputOptions): Promise<void> {
   // mv ${GITHUB_WORKSPACE} ${GITHUB_WORKSPACE}.bak
