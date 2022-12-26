@@ -5,6 +5,14 @@ inputs:
   workspace-name:
     required: false
     description: 'Input workspace directory name if you need to change from default: ${workspace-yaml-name}-${job-name}'
+  prefix:
+    required: false
+    description: 'Set prefix for workspace directory name. default: ""'
+    default: ""
+  suffix:
+    required: false
+    description: 'Set suffix for workspace directory name. default: ""'
+    default: ""
 runs:
   using: 'node16'
   main: 'dist/main/index.js'

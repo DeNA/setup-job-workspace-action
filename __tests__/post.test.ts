@@ -29,7 +29,12 @@ beforeEach(async () => {
   await fs.promises.mkdir(process.env.GITHUB_WORKSPACE!, { recursive: true })
 
   // Do main step of own actions before each test
-  await replaceWorkspace(contextMock, "")
+  const inputs = {
+    workspaceName: '',
+    prefix: '',
+    suffix: '',
+  }
+  await replaceWorkspace(contextMock, inputs)
 })
 
 afterEach(async () => {

@@ -9,15 +9,20 @@ function escapeDirName (rawDirName: string): string {
   return rawDirName.trim().replace(/\s/g, '_')
 }
 
-export function createDirName (context: Context, workspaceName: string): string {
+export function createDirName (context: Context, workspaceName: string, prefix: string, suffix: string): string {
   core.debug(`workspaceName: ${workspaceName}`)
-  if (workspaceName !== '') return escapeDirName(workspaceName)
+  if (workspaceName !== '') return escapeDirName(`${prefix}${workspaceName}${suffix}`)
 
   const workflowName = getWorkflowName()
-  return escapeDirName(`${workflowName}-${context.job}`)
+  return escapeDirName(`${prefix}${workflowName}-${context.job}${suffix}`)
 }
 
-export async function replaceWorkspace (context: Context, workspaceName: string): Promise<void> {
+export type InputOptions = {
+  workspaceName: string,
+  prefix: string,
+  suffix: string,
+}
+export async function replaceWorkspace (context: Context, inputs: InputOptions): Promise<void> {
   // mv ${GITHUB_WORKSPACE} ${GITHUB_WORKSPACE}.bak
   const workspacePath = getWorkspacePath()
   const workspaceBakPath = workspacePath + '.bak'
@@ -27,7 +32,7 @@ export async function replaceWorkspace (context: Context, workspaceName: string)
   // WORKFLOW_YAML=$(basename "${{ github.event.workflow }}" .yml)
   // TMP_DIR="${RUNNER_WORKSPACE}/${WORKFLOW_YAML}-${{ github.job }}"
   // mkdir -p ${TMP_DIR}
-  const virtualWorkspacePath = path.join(getRunnerWorkspacePath(), createDirName(context, workspaceName))
+  const virtualWorkspacePath = path.join(getRunnerWorkspacePath(), createDirName(context, inputs.workspaceName, inputs.prefix, inputs.suffix))
   await io.mkdirP(virtualWorkspacePath)
   core.info(`mkdir -p ${virtualWorkspacePath}`)
 

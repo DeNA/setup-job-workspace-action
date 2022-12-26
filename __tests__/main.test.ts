@@ -36,18 +36,26 @@ afterEach(async () => {
 
 test('createDirName() returns workspaceName', async () => {
   const workspaceName = 'test-dir'
-  const actual = createDirName(contextMock, workspaceName)
+  const actual = createDirName(contextMock, workspaceName, "", "")
   await expect(actual).toEqual(workspaceName)
 })
 
 test('createDirName() returns escaped workspaceName', async () => {
   const workspaceName = 'test dir'
-  const actual = createDirName(contextMock, workspaceName)
+  const actual = createDirName(contextMock, workspaceName, "", "")
   await expect(actual).toEqual('test_dir')
 })
 
+test('createDirName() returns escaped workspaceName with prefix and suffix', async () => {
+  const workspaceName = 'test dir'
+  const prefix = "prefix-"
+  const suffix = "-suffix"
+  const actual = createDirName(contextMock, workspaceName, prefix, suffix)
+  await expect(actual).toEqual(`${prefix}test_dir${suffix}`)
+})
+
 test('createDirName() returns default name', async () => {
-  const actual = createDirName(contextMock, "")
+  const actual = createDirName(contextMock, "", "", "")
   await expect(actual).toEqual(`${workflowName}-${jobName}`)
 })
 
@@ -58,15 +66,32 @@ test('createDirName() returns escaped default name', async () => {
     job: jobName
   } as unknown as Context
 
-  const actual = createDirName(overrideMock, "")
+  const actual = createDirName(overrideMock, "", "", "")
   await expect(actual).toEqual(`${workflowName}-test_Job`)
 })
 
-test('replaceWorkspace() with workspaceName', async () => {
-  const workspaceName = 'test-dir'
-  await replaceWorkspace(contextMock, workspaceName)
+test('createDirName() returns escaped default name with prefix and suffix', async () => {
+  const jobName = 'test Job'
+  const overrideMock = {
+    ...contextMock,
+    job: jobName
+  } as unknown as Context
+  const prefix = "prefix-"
+  const suffix = "-suffix"
 
-  const virtualWorkspacePath = path.join(process.env.RUNNER_WORKSPACE!, workspaceName)
+  const actual = createDirName(overrideMock, "", prefix, suffix)
+  await expect(actual).toEqual(`${prefix}${workflowName}-test_Job${suffix}`)
+})
+
+test('replaceWorkspace() with workspaceName', async () => {
+  const inputs = {
+    workspaceName: 'test-dir',
+    prefix: '',
+    suffix: '',
+  }
+  await replaceWorkspace(contextMock, inputs)
+
+  const virtualWorkspacePath = path.join(process.env.RUNNER_WORKSPACE!, inputs.workspaceName)
 
   // /$RUNNER_WORKSPACE/{workspaceName}/ is exists
   expect(fs.accessSync(virtualWorkspacePath)).toBeUndefined()
@@ -77,7 +102,12 @@ test('replaceWorkspace() with workspaceName', async () => {
 })
 
 test('replaceWorkspace() with default input', async () => {
-  await replaceWorkspace(contextMock, "")
+  const inputs = {
+    workspaceName: '',
+    prefix: '',
+    suffix: '',
+  }
+  await replaceWorkspace(contextMock, inputs)
 
   const virtualWorkspacePath = path.join(process.env.RUNNER_WORKSPACE!, `${workflowName}-${jobName}`)
 
