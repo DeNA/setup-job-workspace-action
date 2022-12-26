@@ -6,7 +6,7 @@ import { expect, test, beforeEach, afterEach } from '@jest/globals'
 import { replaceWorkspace, restoreWorkspace } from '../src/workspace'
 
 const workflowName = 'test'
-const jobName = 'testJob'
+const jobName = 'testjob'
 const githubWorkflow = "Test workflow"
 const githubWorkflowRef = `"Kesin11/setup-job-workspace-action/.github/workflows/${workflowName}.yml@refs/heads/test_branch`
 const contextMock = {

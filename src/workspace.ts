@@ -6,7 +6,7 @@ import { Context } from '@actions/github/lib/context'
 import { getRunnerWorkspacePath, getWorkflowName, getWorkspacePath } from './github_env'
 
 function escapeDirName (rawDirName: string): string {
-  return rawDirName.trim().replace(/\s/g, '_')
+  return rawDirName.trim().replace(/\s/g, '_').toLowerCase()
 }
 
 export function createDirName (context: Context, workspaceName: string, prefix: string, suffix: string): string {
