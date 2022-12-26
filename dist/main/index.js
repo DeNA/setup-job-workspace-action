@@ -10149,8 +10149,12 @@ const github = __importStar(__nccwpck_require__(5438));
 const workspace_1 = __nccwpck_require__(3815);
 async function run() {
     try {
-        const workspaceName = core.getInput('workspace-name');
-        await (0, workspace_1.replaceWorkspace)(github.context, workspaceName);
+        const inputs = {
+            workspaceName: core.getInput('workspace-name'),
+            prefix: core.getInput('prefix'),
+            suffix: core.getInput('suffix')
+        };
+        await (0, workspace_1.replaceWorkspace)(github.context, inputs);
     }
     catch (error) {
         core.error(JSON.stringify(error));
@@ -10202,17 +10206,17 @@ const core = __importStar(__nccwpck_require__(2186));
 const io = __importStar(__nccwpck_require__(7436));
 const github_env_1 = __nccwpck_require__(2237);
 function escapeDirName(rawDirName) {
-    return rawDirName.trim().replace(/\s/g, '_');
+    return rawDirName.trim().replace(/\s/g, '_').toLowerCase();
 }
-function createDirName(context, workspaceName) {
+function createDirName(context, workspaceName, prefix, suffix) {
     core.debug(`workspaceName: ${workspaceName}`);
     if (workspaceName !== '')
-        return escapeDirName(workspaceName);
+        return escapeDirName(`${prefix}${workspaceName}${suffix}`);
     const workflowName = (0, github_env_1.getWorkflowName)();
-    return escapeDirName(`${workflowName}-${context.job}`);
+    return escapeDirName(`${prefix}${workflowName}-${context.job}${suffix}`);
 }
 exports.createDirName = createDirName;
-async function replaceWorkspace(context, workspaceName) {
+async function replaceWorkspace(context, inputs) {
     // mv ${GITHUB_WORKSPACE} ${GITHUB_WORKSPACE}.bak
     const workspacePath = (0, github_env_1.getWorkspacePath)();
     const workspaceBakPath = workspacePath + '.bak';
@@ -10221,7 +10225,7 @@ async function replaceWorkspace(context, workspaceName) {
     // WORKFLOW_YAML=$(basename "${{ github.event.workflow }}" .yml)
     // TMP_DIR="${RUNNER_WORKSPACE}/${WORKFLOW_YAML}-${{ github.job }}"
     // mkdir -p ${TMP_DIR}
-    const virtualWorkspacePath = path_1.default.join((0, github_env_1.getRunnerWorkspacePath)(), createDirName(context, workspaceName));
+    const virtualWorkspacePath = path_1.default.join((0, github_env_1.getRunnerWorkspacePath)(), createDirName(context, inputs.workspaceName, inputs.prefix, inputs.suffix));
     await io.mkdirP(virtualWorkspacePath);
     core.info(`mkdir -p ${virtualWorkspacePath}`);
     // ln -s "${TMP_DIR}" ${GITHUB_WORKSPACE}

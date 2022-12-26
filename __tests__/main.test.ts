@@ -6,7 +6,7 @@ import { expect, test, beforeEach, afterEach } from '@jest/globals'
 import { createDirName, replaceWorkspace } from '../src/workspace'
 
 const workflowName = 'test'
-const jobName = 'testJob'
+const jobName = 'testjob'
 const githubWorkflow = "Test workflow"
 const githubWorkflowRef = `"Kesin11/setup-job-workspace-action/.github/workflows/${workflowName}.yml@refs/heads/test_branch`
 const contextMock = {
@@ -36,37 +36,62 @@ afterEach(async () => {
 
 test('createDirName() returns workspaceName', async () => {
   const workspaceName = 'test-dir'
-  const actual = createDirName(contextMock, workspaceName)
+  const actual = createDirName(contextMock, workspaceName, "", "")
   await expect(actual).toEqual(workspaceName)
 })
 
 test('createDirName() returns escaped workspaceName', async () => {
-  const workspaceName = 'test dir'
-  const actual = createDirName(contextMock, workspaceName)
+  const workspaceName = 'Test Dir'
+  const actual = createDirName(contextMock, workspaceName, "", "")
   await expect(actual).toEqual('test_dir')
 })
 
+test('createDirName() returns escaped workspaceName with prefix and suffix', async () => {
+  const workspaceName = 'Test Dir'
+  const prefix = "Prefix-"
+  const suffix = "-Suffix"
+  const actual = createDirName(contextMock, workspaceName, prefix, suffix)
+  await expect(actual).toEqual("prefix-test_dir-suffix")
+})
+
 test('createDirName() returns default name', async () => {
-  const actual = createDirName(contextMock, "")
+  const actual = createDirName(contextMock, "", "", "")
   await expect(actual).toEqual(`${workflowName}-${jobName}`)
 })
 
 test('createDirName() returns escaped default name', async () => {
-  const jobName = 'test Job'
+  const jobName = 'Test Job'
   const overrideMock = {
     ...contextMock,
     job: jobName
   } as unknown as Context
 
-  const actual = createDirName(overrideMock, "")
-  await expect(actual).toEqual(`${workflowName}-test_Job`)
+  const actual = createDirName(overrideMock, "", "", "")
+  await expect(actual).toEqual(`${workflowName}-test_job`)
+})
+
+test('createDirName() returns escaped default name with prefix and suffix', async () => {
+  const jobName = 'Test Job'
+  const overrideMock = {
+    ...contextMock,
+    job: jobName
+  } as unknown as Context
+  const prefix = "Prefix-"
+  const suffix = "-Suffix"
+
+  const actual = createDirName(overrideMock, "", prefix, suffix)
+  await expect(actual).toEqual(`prefix-${workflowName}-test_job-suffix`)
 })
 
 test('replaceWorkspace() with workspaceName', async () => {
-  const workspaceName = 'test-dir'
-  await replaceWorkspace(contextMock, workspaceName)
+  const inputs = {
+    workspaceName: 'test-dir',
+    prefix: '',
+    suffix: '',
+  }
+  await replaceWorkspace(contextMock, inputs)
 
-  const virtualWorkspacePath = path.join(process.env.RUNNER_WORKSPACE!, workspaceName)
+  const virtualWorkspacePath = path.join(process.env.RUNNER_WORKSPACE!, inputs.workspaceName)
 
   // /$RUNNER_WORKSPACE/{workspaceName}/ is exists
   expect(fs.accessSync(virtualWorkspacePath)).toBeUndefined()
@@ -77,7 +102,12 @@ test('replaceWorkspace() with workspaceName', async () => {
 })
 
 test('replaceWorkspace() with default input', async () => {
-  await replaceWorkspace(contextMock, "")
+  const inputs = {
+    workspaceName: '',
+    prefix: '',
+    suffix: '',
+  }
+  await replaceWorkspace(contextMock, inputs)
 
   const virtualWorkspacePath = path.join(process.env.RUNNER_WORKSPACE!, `${workflowName}-${jobName}`)
 

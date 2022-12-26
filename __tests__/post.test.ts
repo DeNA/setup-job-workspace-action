@@ -6,7 +6,7 @@ import { expect, test, beforeEach, afterEach } from '@jest/globals'
 import { replaceWorkspace, restoreWorkspace } from '../src/workspace'
 
 const workflowName = 'test'
-const jobName = 'testJob'
+const jobName = 'testjob'
 const githubWorkflow = "Test workflow"
 const githubWorkflowRef = `"Kesin11/setup-job-workspace-action/.github/workflows/${workflowName}.yml@refs/heads/test_branch`
 const contextMock = {
@@ -29,7 +29,12 @@ beforeEach(async () => {
   await fs.promises.mkdir(process.env.GITHUB_WORKSPACE!, { recursive: true })
 
   // Do main step of own actions before each test
-  await replaceWorkspace(contextMock, "")
+  const inputs = {
+    workspaceName: '',
+    prefix: '',
+    suffix: '',
+  }
+  await replaceWorkspace(contextMock, inputs)
 })
 
 afterEach(async () => {

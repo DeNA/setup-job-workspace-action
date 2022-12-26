@@ -1,11 +1,15 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
-import { replaceWorkspace } from './workspace'
+import { InputOptions, replaceWorkspace } from './workspace'
 
 async function run (): Promise<void> {
   try {
-    const workspaceName: string = core.getInput('workspace-name')
-    await replaceWorkspace(github.context, workspaceName)
+    const inputs: InputOptions = {
+      workspaceName: core.getInput('workspace-name'),
+      prefix: core.getInput('prefix'),
+      suffix: core.getInput('suffix')
+    }
+    await replaceWorkspace(github.context, inputs)
   } catch (error) {
     core.error(JSON.stringify(error))
     if (error instanceof Error) core.setFailed(error.message)

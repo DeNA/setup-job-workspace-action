@@ -22,8 +22,21 @@ jobs:
       # Use before actions/checkout
       - uses: Kesin11/setup-job-workspace-action@v1
         with:
-          # You can change workspace name from default: ${workspace-yaml-name}-${job-name}
-          workspace_name: foo_bar_workspace
+          # You can change workspace name from default: ${workflow-yaml-name}-${job-name}
+          workspace-name: foo_bar_workspace
+      - uses: actions/checkout@v3
+
+      # ... your build steps
+
+  with_prefix_and_suffix:
+    runs-on: [self-hosted]
+    steps:
+      - uses: Kesin11/setup-job-workspace-action@v1
+        with:
+          # You can set prefix and suffix to default workspace name and also `workspace-name`.
+          # ex: "prefix-${workflow-yaml-name}-${job-name}-suffix"
+          prefix: "prefix-"
+          suffix: "-suffix"
       - uses: actions/checkout@v3
 
       # ... your build steps
@@ -31,6 +44,15 @@ jobs:
 
 ### Options
 See [action.yml](./action.yml)
+
+## Notice
+### Default workspace name is different for older runner version.
+`workspace-name` default is `${workflow-yaml-name}-${job-name}`, but when self-hosted runner version is older than [actions/runner@v2.300.0](https://github.com/actions/runner/releases/tag/v2.300.0) defalut is `${workflow-name}-${job-name}`.
+
+This defference comes from technical reason that how to get workflow yaml name. First, try to get yaml name from `GITHUB_WORKFLOW_REF` environment variable that exposed from runner version v2.330.0
+. When this action detect runs on older runner case that like using GHES, this actions fallback to use `GITHUB_WORKFLOW` for create default `workspace-name`. `GITHUB_WORKFLOW` is equal to [workflow `name`](https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#name).
+
+If you want to keep the same workspace name between different versions of the runner or for future version upgrades, specify the `workspace-name` option explicitly.
 
 ## How it works
 GitHub Actions runner only has one workspace directory per repository ($GITHUB_WORKSPACE). That path is defined by the repository name, for example the workspace path of this repository is `/home/runner/work/setup-job-workspace-action/setup-job-workspace-action` in GitHub hosted Ubuntu runner.
