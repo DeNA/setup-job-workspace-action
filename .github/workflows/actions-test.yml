@@ -29,8 +29,8 @@ jobs:
       - name: Created workspace is not symlkink
         # Default dir name: ${YAML_NAME}-${JOB_NAME}
         run: |
-          test -d $RUNNER_WORKSPACE/Actions_integrate_test-default_name
-          if [ -L $RUNNER_WORKSPACE/Actions_integrate_test-default_name ]; then
+          test -d $RUNNER_WORKSPACE/actions_integrate_test-default_name
+          if [ -L $RUNNER_WORKSPACE/actions_integrate_test-default_name ]; then
             exit 1
           fi
 
@@ -63,6 +63,31 @@ jobs:
         run: |
           test -d $RUNNER_WORKSPACE/test-dir
           if [ -L $RUNNER_WORKSPACE/test-dir ]; then
+            exit 1
+          fi
+
+      - name: Checkout to new workspace for action post process
+        uses: actions/checkout@v3
+        if: ${{ always() }}
+
+  default_name_with_prefix_suffix:
+    strategy:
+      matrix:
+        runner: [ubuntu-latest, macos-latest]
+      fail-fast: false
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./
+        with:
+          prefix: "Prefix-"
+          suffix: "-Suffix"
+
+      - name: Created workspace is not symlkink
+        # Default dir name: ${YAML_NAME}-${JOB_NAME}
+        run: |
+          test -d $RUNNER_WORKSPACE/prefix-actions_integrate_test-default_name-suffix
+          if [ -L $RUNNER_WORKSPACE/prefix-actions_integrate_test-default_name-suffix ]; then
             exit 1
           fi
 
