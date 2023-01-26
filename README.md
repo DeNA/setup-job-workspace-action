@@ -49,7 +49,7 @@ See [action.yml](./action.yml)
 ### Default workspace name is different for older runner version.
 `workspace-name` default is `${workflow-yaml-name}-${job-name}`, but when self-hosted runner version is older than [actions/runner@v2.300.0](https://github.com/actions/runner/releases/tag/v2.300.0) defalut is `${workflow-name}-${job-name}`.
 
-This defference comes from technical reason that how to get workflow yaml name. First, try to get yaml name from `GITHUB_WORKFLOW_REF` environment variable that exposed from runner version v2.330.0
+This defference comes from technical reason that how to get workflow yaml name. First, try to get yaml name from `GITHUB_WORKFLOW_REF` environment variable that exposed from runner version v2.300.0
 . When this action detect runs on older runner case that like using GHES, this actions fallback to use `GITHUB_WORKFLOW` for create default `workspace-name`. `GITHUB_WORKFLOW` is equal to [workflow `name`](https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#name).
 
 If you want to keep the same workspace name between different versions of the runner or for future version upgrades, specify the `workspace-name` option explicitly.
