@@ -11,7 +11,7 @@ describe("getWorkflowName()", () => {
     process.env = origEnv
   })
 
-  describe("with GITHUB_WORKFLOW_REF", () => {
+  describe("with GITHUB_WORKFLOW_REF that introduced actions/runner v2.300.0", () => {
     beforeEach(async () => {
     })
 
@@ -44,6 +44,7 @@ describe("getWorkflowName()", () => {
       process.env = {
         ...origEnv,
         GITHUB_WORKFLOW: githubWorkflow,
+        GITHUB_WORKFLOW_REF: undefined,
       }
       const actual = getWorkflowName()
       expect(actual).toEqual(githubWorkflow)
