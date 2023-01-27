@@ -28,10 +28,9 @@ jobs:
         run: test -d ${GITHUB_WORKSPACE}.bak
       - name: Created workspace is not symlkink
         # Default dir name: ${workflow-yaml-name}-${job-name}
-        # But github hosted runner still use v2.299.1 at 2022/12/26, so this test use ${workflow-name}-${job-name}
         run: |
-          test -d $RUNNER_WORKSPACE/actions_integrate_test-default_name
-          if [ -L $RUNNER_WORKSPACE/actions_integrate_test-default_name ]; then
+          test -d $RUNNER_WORKSPACE/actions-test-default_name
+          if [ -L $RUNNER_WORKSPACE/actions-test-default_name ]; then
             exit 1
           fi
 
