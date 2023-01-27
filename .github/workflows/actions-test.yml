@@ -29,6 +29,8 @@ jobs:
       - name: Created workspace is not symlkink
         # Default dir name: ${workflow-yaml-name}-${job-name}
         run: |
+          set -x
+          ls -l $RUNNER_WORKSPACE
           test -d $RUNNER_WORKSPACE/actions-test-default_name
           if [ -L $RUNNER_WORKSPACE/actions-test-default_name ]; then
             exit 1
@@ -46,6 +48,7 @@ jobs:
     steps:
       - name: $GITHUB_WORKSPACE is not symlink
         run: |
+          set -x
           if [ -L $GITHUB_WORKSPACE ]; then
             exit 1
           fi
@@ -61,6 +64,8 @@ jobs:
         run: test -d ${GITHUB_WORKSPACE}.bak
       - name: Created workspace is not symlkink
         run: |
+          set -x
+          ls -l $RUNNER_WORKSPACE
           test -d $RUNNER_WORKSPACE/test-dir
           if [ -L $RUNNER_WORKSPACE/test-dir ]; then
             exit 1
@@ -86,6 +91,8 @@ jobs:
 
       - name: Created workspace is not symlkink
         run: |
+          set -x
+          ls -l $RUNNER_WORKSPACE
           test -d $RUNNER_WORKSPACE/prefix-test-dir-suffix
           if [ -L $RUNNER_WORKSPACE/prefix-test-dir-suffix ]; then
             exit 1
