@@ -10,8 +10,8 @@ jobs:
   default:
     runs-on: [self-hosted]
     steps:
-      # Use before actions/checkout
-      - uses: Kesin11/setup-job-workspace-action@v1
+      # Must use before actions/checkout
+      - uses: Kesin11/setup-job-workspace-action@v2
       - uses: actions/checkout@v3
 
       # ... your build steps
@@ -19,8 +19,7 @@ jobs:
   given_dir_name:
     runs-on: [self-hosted]
     steps:
-      # Use before actions/checkout
-      - uses: Kesin11/setup-job-workspace-action@v1
+      - uses: Kesin11/setup-job-workspace-action@v2
         with:
           # You can change workspace name from default: ${workflow-yaml-name}-${job-name}
           workspace-name: foo_bar_workspace
@@ -28,10 +27,31 @@ jobs:
 
       # ... your build steps
 
+  given_dir_name_dynamically:
+    runs-on: [self-hosted]
+    steps:
+      # If you want to change workspace-name dynamically, actions/github-script or run bash script is useful.
+      # This example changes workspace-name by branch name when triggered by "workflow_dispatch".
+      - uses: actions/github-script@v6
+        id: set-workspace-name
+        with:
+          result-encoding: string
+          script: |
+            const branch = context.ref.split('/').slice(2).join('/')
+            return (context.eventName === "workflow_dispatch")
+              ? `manual_trigger_${branch}`
+              : "default"
+      - uses: Kesin11/setup-job-workspace-action@v2
+        with:
+          workspace-name: ${{ steps.set-workspace-name.outputs.result }}
+      - uses: actions/checkout@v3
+
+      # ... your build steps
+
   with_prefix_and_suffix:
     runs-on: [self-hosted]
     steps:
-      - uses: Kesin11/setup-job-workspace-action@v1
+      - uses: Kesin11/setup-job-workspace-action@v2
         with:
           # You can set prefix and suffix to default workspace name and also `workspace-name`.
           # ex: "prefix-${workflow-yaml-name}-${job-name}-suffix"
