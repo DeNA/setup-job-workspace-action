@@ -5,7 +5,7 @@
   "description": "A action create workspace to checkout repository for each jobs",
   "main": "lib/main.js",
   "engines": {
-    "node": ">=v16.19.0"
+    "node": ">=v18.13.0"
   },
   "scripts": {
     "build": "tsc",
