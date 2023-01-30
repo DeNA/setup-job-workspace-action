@@ -16,7 +16,7 @@ describe("getWorkflowName()", () => {
     })
 
     test("refs/heads", async () => {
-      const githubWorkflowRef = `"Kesin11/setup-job-workspace-action/.github/workflows/${workflowName}.yml@refs/heads/test_branch`
+      const githubWorkflowRef = `"DeNA/setup-job-workspace-action/.github/workflows/${workflowName}.yml@refs/heads/test_branch`
       process.env = {
         ...origEnv,
         GITHUB_WORKFLOW: githubWorkflow,
@@ -27,7 +27,7 @@ describe("getWorkflowName()", () => {
       expect(actual).toEqual(workflowName)
     })
     test("refs/pull", async () => {
-      const githubWorkflowRef = `"Kesin11/setup-job-workspace-action/.github/workflows/${workflowName}.yml@refs/pull/merge/90`
+      const githubWorkflowRef = `"DeNA/setup-job-workspace-action/.github/workflows/${workflowName}.yml@refs/pull/merge/90`
       process.env = {
         ...origEnv,
         GITHUB_WORKFLOW: githubWorkflow,
@@ -40,7 +40,7 @@ describe("getWorkflowName()", () => {
 
     test("workflowName has hyphen", async () => {
       const workflowName = 'actions-test'
-      const githubWorkflowRef = `"Kesin11/setup-job-workspace-action/.github/workflows/${workflowName}.yml@refs/heads/test_branch`
+      const githubWorkflowRef = `"DeNA/setup-job-workspace-action/.github/workflows/${workflowName}.yml@refs/heads/test_branch`
       process.env = {
         ...origEnv,
         GITHUB_WORKFLOW: githubWorkflow,

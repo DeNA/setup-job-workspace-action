@@ -20,7 +20,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kesin11-private/setup-job-workspace-action.git"
+    "url": "git+https://github.com/DeNA/setup-job-workspace-action.git"
   },
   "keywords": [
     "actions",

@@ -1,5 +1,5 @@
-[![actions-test](https://github.com/Kesin11/setup-job-workspace-action/actions/workflows/actions-test.yml/badge.svg)](https://github.com/Kesin11/setup-job-workspace-action/actions/workflows/actions-test.yml)
-[![build-test](https://github.com/Kesin11/setup-job-workspace-action/actions/workflows/test.yml/badge.svg)](https://github.com/Kesin11/setup-job-workspace-action/actions/workflows/test.yml)
+[![actions-test](https://github.com/DeNA/setup-job-workspace-action/actions/workflows/actions-test.yml/badge.svg)](https://github.com/DeNA/setup-job-workspace-action/actions/workflows/actions-test.yml)
+[![build-test](https://github.com/DeNA/setup-job-workspace-action/actions/workflows/test.yml/badge.svg)](https://github.com/DeNA/setup-job-workspace-action/actions/workflows/test.yml)
 
 # setup-job-workspace-action
 An action creating a virtual workspace directory for each job. It is useful when using self-hosted runner with large size of repository.
@@ -11,7 +11,7 @@ jobs:
     runs-on: [self-hosted]
     steps:
       # Must use before actions/checkout
-      - uses: Kesin11/setup-job-workspace-action@v2
+      - uses: DeNA/setup-job-workspace-action@v2
       - uses: actions/checkout@v3
 
       # ... your build steps
@@ -19,7 +19,7 @@ jobs:
   given_dir_name:
     runs-on: [self-hosted]
     steps:
-      - uses: Kesin11/setup-job-workspace-action@v2
+      - uses: DeNA/setup-job-workspace-action@v2
         with:
           # You can change workspace name from default: ${workflow-yaml-name}-${job-name}
           workspace-name: foo_bar_workspace
@@ -41,7 +41,7 @@ jobs:
             return (context.eventName === "workflow_dispatch")
               ? `manual_trigger_${branch}`
               : "default"
-      - uses: Kesin11/setup-job-workspace-action@v2
+      - uses: DeNA/setup-job-workspace-action@v2
         with:
           workspace-name: ${{ steps.set-workspace-name.outputs.result }}
       - uses: actions/checkout@v3
@@ -51,7 +51,7 @@ jobs:
   with_prefix_and_suffix:
     runs-on: [self-hosted]
     steps:
-      - uses: Kesin11/setup-job-workspace-action@v2
+      - uses: DeNA/setup-job-workspace-action@v2
         with:
           # You can set prefix and suffix to default workspace name and also `workspace-name`.
           # ex: "prefix-${workflow-yaml-name}-${job-name}-suffix"
