@@ -1,0 +1,5 @@
+* @Kesin11 @srz-zumix @VeyronSakai
+
+# Renovate update dependencies frequently, so these are ignored to set reviewers. 
+!package.json
+!package-lock.json
