@@ -1,6 +1,15 @@
 {
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "github>Kesin11/renovate-config:oss",
     "schedule:weekends"
+  ],
+  "packageRules": [
+    {
+      "matchPackageNames": ["@types/node"],
+      "extends": [
+        "schedule:monthly"
+      ]
+    }
   ]
 }
