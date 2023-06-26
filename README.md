@@ -13,8 +13,6 @@ jobs:
       # Must use before actions/checkout
       - uses: DeNA/setup-job-workspace-action@v2
       - uses: actions/checkout@v3
-        with:
-          clean: false # keep your Unity Library folder to be reussable
 
       # ... your build steps
 
@@ -26,8 +24,6 @@ jobs:
           # You can change workspace name from default: ${workflow-yaml-name}-${job-name}
           workspace-name: foo_bar_workspace
       - uses: actions/checkout@v3
-        with:
-          clean: false # keep your Unity Library folder to be reussable
 
       # ... your build steps
 
@@ -49,8 +45,6 @@ jobs:
         with:
           workspace-name: ${{ steps.set-workspace-name.outputs.result }}
       - uses: actions/checkout@v3
-        with:
-          clean: false # keep your Unity Library folder to be reussable
 
       # ... your build steps
 
@@ -64,8 +58,6 @@ jobs:
           prefix: "prefix-"
           suffix: "-suffix"
       - uses: actions/checkout@v3
-        with:
-          clean: false # keep your Unity Library folder to be reussable
 
       # ... your build steps
 ```
