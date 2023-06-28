@@ -3369,7 +3369,7 @@ async function replaceWorkspace(context, inputs) {
     await io.mkdirP(virtualWorkspacePath);
     core.info(`mkdir -p ${virtualWorkspacePath}`);
     // ln -s "${TMP_DIR}" ${GITHUB_WORKSPACE}
-    await fs_1.default.promises.symlink(virtualWorkspacePath, workspacePath);
+    await fs_1.default.promises.symlink(virtualWorkspacePath, workspacePath, 'dir');
     core.info(`ln -s ${virtualWorkspacePath} ${workspacePath}`);
 }
 exports.replaceWorkspace = replaceWorkspace;
