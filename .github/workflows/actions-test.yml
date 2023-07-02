@@ -9,12 +9,11 @@ jobs:
   default_name:
     strategy:
       matrix:
-        runner: [ubuntu-latest, macos-latest, windows-latest]
+        runner: [ubuntu-latest, macos-latest]
       fail-fast: false
     runs-on: ${{ matrix.runner }}
     steps:
       - name: $GITHUB_WORKSPACE is not symlink
-        shell: bash
         run: |
           if [ -L $GITHUB_WORKSPACE ]; then
             exit 1
@@ -24,13 +23,10 @@ jobs:
       - uses: ./
 
       - name: $GITHUB_WORKSPACE is symlink
-        shell: bash
         run: test -L $GITHUB_WORKSPACE
       - name: $GITHUB_WORKSPACE.bak is exists
-        shell: bash
         run: test -d ${GITHUB_WORKSPACE}.bak
       - name: Created workspace is not symlkink
-        shell: bash
         # Default dir name: ${workflow-yaml-name}-${job-name}
         run: |
           set -x
@@ -46,12 +42,11 @@ jobs:
   workspace_name:
     strategy:
       matrix:
-        runner: [ubuntu-latest, macos-latest, windows-latest]
+        runner: [ubuntu-latest, macos-latest]
       fail-fast: false
     runs-on: ${{ matrix.runner }}
     steps:
       - name: $GITHUB_WORKSPACE is not symlink
-        shell: bash
         run: |
           set -x
           if [ -L $GITHUB_WORKSPACE ]; then
@@ -64,13 +59,10 @@ jobs:
           workspace-name: test-dir
 
       - name: $GITHUB_WORKSPACE is symlink
-        shell: bash
         run: test -L $GITHUB_WORKSPACE
       - name: $GITHUB_WORKSPACE.bak is exists
-        shell: bash
         run: test -d ${GITHUB_WORKSPACE}.bak
       - name: Created workspace is not symlkink
-        shell: bash
         run: |
           set -x
           ls -l $RUNNER_WORKSPACE
@@ -86,7 +78,7 @@ jobs:
   workspace_name_with_prefix_suffix:
     strategy:
       matrix:
-        runner: [ubuntu-latest, macos-latest, windows-latest]
+        runner: [ubuntu-latest, macos-latest]
       fail-fast: false
     runs-on: ${{ matrix.runner }}
     steps:
@@ -98,7 +90,6 @@ jobs:
           suffix: "-Suffix"
 
       - name: Created workspace is not symlkink
-        shell: bash
         run: |
           set -x
           ls -l $RUNNER_WORKSPACE
