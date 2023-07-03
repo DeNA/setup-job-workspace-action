@@ -15,8 +15,8 @@ inputs:
     default: ""
   working-directory:
     required: false
-    description: 'Set working-directory for nodejs. default: ""'
-    default: ""
+    description: 'Set working-directory for nodejs. default: "" (Linux, macOS), ".." (Windows)'
+    default: "${{ runner.os == 'Windows' && '..' || '' }}"
 runs:
   using: 'node16'
   main: 'dist/main/index.js'

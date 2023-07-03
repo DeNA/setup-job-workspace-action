@@ -21,11 +21,7 @@ jobs:
           fi
 
       - uses: actions/checkout@v3
-      # Windows must chdir node.js current directory from mv target directory
       - uses: ./
-        with:
-          working-directory: "${{ runner.os == 'Windows' && '..' || '' }}"
-
       - name: $GITHUB_WORKSPACE is symlink
         shell: bash
         run: test -L $GITHUB_WORKSPACE
@@ -63,11 +59,9 @@ jobs:
           fi
 
       - uses: actions/checkout@v3
-      # Windows must chdir node.js current directory from mv target directory
       - uses: ./
         with:
           workspace-name: test-dir
-          working-directory: "${{ runner.os == 'Windows' && '..' || '' }}"
 
       - name: $GITHUB_WORKSPACE is symlink
         shell: bash
@@ -97,13 +91,11 @@ jobs:
     runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v3
-      # Windows must chdir node.js current directory from mv target directory
       - uses: ./
         with:
           workspace-name: "test-dir"
           prefix: "Prefix-"
           suffix: "-Suffix"
-          working-directory: "${{ runner.os == 'Windows' && '..' || '' }}"
 
       - name: Created workspace is not symlkin
         shell: bash
@@ -135,6 +127,7 @@ jobs:
           fi
 
       - uses: actions/checkout@v3
+      # Windows must chdir node.js current directory from mv target directory. '..' should works desired.
       - uses: ./
         with:
           working-directory: ".."
