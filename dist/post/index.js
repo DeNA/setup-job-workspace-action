@@ -3357,6 +3357,12 @@ function createDirName(context, workspaceName, prefix, suffix) {
 }
 exports.createDirName = createDirName;
 async function replaceWorkspace(context, inputs) {
+    // cd ${WORKING_DIRECTORY}
+    if (inputs.workingDirectory !== '') {
+        const workingDirectory = path_1.default.resolve(inputs.workingDirectory);
+        core.info(`cd ${process.cwd()} -> ${workingDirectory}`);
+        process.chdir(workingDirectory);
+    }
     // mv ${GITHUB_WORKSPACE} ${GITHUB_WORKSPACE}.bak
     const workspacePath = (0, github_env_1.getWorkspacePath)();
     const workspaceBakPath = workspacePath + '.bak';
@@ -3369,7 +3375,7 @@ async function replaceWorkspace(context, inputs) {
     await io.mkdirP(virtualWorkspacePath);
     core.info(`mkdir -p ${virtualWorkspacePath}`);
     // ln -s "${TMP_DIR}" ${GITHUB_WORKSPACE}
-    await fs_1.default.promises.symlink(virtualWorkspacePath, workspacePath);
+    await fs_1.default.promises.symlink(virtualWorkspacePath, workspacePath, 'dir');
     core.info(`ln -s ${virtualWorkspacePath} ${workspacePath}`);
 }
 exports.replaceWorkspace = replaceWorkspace;

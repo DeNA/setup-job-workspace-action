@@ -33,6 +33,7 @@ beforeEach(async () => {
     workspaceName: '',
     prefix: '',
     suffix: '',
+    workingDirectory: '',
   }
   await replaceWorkspace(contextMock, inputs)
 })
