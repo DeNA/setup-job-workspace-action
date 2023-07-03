@@ -24,7 +24,6 @@ export interface InputOptions {
   workingDirectory: string
 }
 export async function replaceWorkspace (context: Context, inputs: InputOptions): Promise<void> {
-
   // cd ${WORKING_DIRECTORY}
   if (inputs.workingDirectory !== '') {
     const workingDirectory = path.resolve(inputs.workingDirectory)
