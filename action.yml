@@ -13,6 +13,10 @@ inputs:
     required: false
     description: 'Set suffix for workspace directory name. default: ""'
     default: ""
+  working-directory:
+    required: false
+    description: 'Set working-directory for nodejs. default: ""'
+    default: ""
 runs:
   using: 'node16'
   main: 'dist/main/index.js'

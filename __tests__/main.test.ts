@@ -91,10 +91,41 @@ test('replaceWorkspace() with workspaceName', async () => {
     workspaceName: 'test-dir',
     prefix: '',
     suffix: '',
+    workingDirectory: '',
   }
   await replaceWorkspace(contextMock, inputs)
 
   const virtualWorkspacePath = path.join(process.env.RUNNER_WORKSPACE!, inputs.workspaceName)
+
+  // Create dummy file to check symlink is valid or not.
+  const virtualWorkspaceFile = path.join(virtualWorkspacePath, dummyFile)
+  await fs.promises.writeFile(virtualWorkspaceFile, dummyFileContent, 'utf8')
+  const virtualWorkspaceLinkFile = path.join(virtualWorkspacePath, dummyFile)
+
+  // /$RUNNER_WORKSPACE/{workspaceName}/ is exists
+  expect(fs.accessSync(virtualWorkspacePath)).toBeUndefined()
+  // /$GITHUB_WORKSPACE.bak/ is not symlink
+  expect(fs.lstatSync(`${process.env.GITHUB_WORKSPACE!}.bak`).isSymbolicLink()).toBe(false)
+  // /$GITHUB_WORKSPACE is symlink
+  expect(fs.lstatSync(process.env.GITHUB_WORKSPACE!).isSymbolicLink()).toBe(true)
+  // /$virtualWorkspaceFile is exists
+  expect(fs.existsSync(virtualWorkspaceFile)).toBe(true)
+  // /$GITHUB_WORKSPACE/${dummyFile} is directory symlink.
+  expect(fs.readdirSync(process.env.GITHUB_WORKSPACE!)[0]).toBe(dummyFile)
+  // /$GITHUB_WORKSPACE/${dummyFile} content is readable through symlink.
+  expect(fs.readFileSync(virtualWorkspaceLinkFile, 'utf8')).toBe(dummyFileContent)
+})
+
+test('replaceWorkspace() with workingDirectory', async () => {
+  const inputs = {
+    workspaceName: '',
+    prefix: '',
+    suffix: '',
+    workingDirectory: '..',
+  }
+  await replaceWorkspace(contextMock, inputs)
+
+  const virtualWorkspacePath = path.join(process.env.RUNNER_WORKSPACE!, `${workflowName}-${jobName}`)
 
   // Create dummy file to check symlink is valid or not.
   const virtualWorkspaceFile = path.join(virtualWorkspacePath, dummyFile)
@@ -120,6 +151,7 @@ test('replaceWorkspace() with default input', async () => {
     workspaceName: '',
     prefix: '',
     suffix: '',
+    workingDirectory: '',
   }
   await replaceWorkspace(contextMock, inputs)
 
