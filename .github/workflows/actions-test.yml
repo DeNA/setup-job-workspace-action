@@ -28,7 +28,7 @@ jobs:
       - name: $GITHUB_WORKSPACE.bak is exists
         shell: bash
         run: test -d ${GITHUB_WORKSPACE}.bak
-      - name: Created workspace is not symlkink
+      - name: Created workspace is not symlink
         shell: bash
         # Default dir name: ${workflow-yaml-name}-${job-name}
         run: |
@@ -69,7 +69,7 @@ jobs:
       - name: $GITHUB_WORKSPACE.bak is exists
         shell: bash
         run: test -d ${GITHUB_WORKSPACE}.bak
-      - name: Created workspace is not symlkink
+      - name: Created workspace is not symlink
         shell: bash
         run: |
           set -x
@@ -97,7 +97,7 @@ jobs:
           prefix: "Prefix-"
           suffix: "-Suffix"
 
-      - name: Created workspace is not symlkin
+      - name: Created workspace is not symlink
         shell: bash
         run: |
           set -x
@@ -138,7 +138,7 @@ jobs:
       - name: $GITHUB_WORKSPACE.bak is exists
         shell: bash
         run: test -d ${GITHUB_WORKSPACE}.bak
-      - name: Created workspace is not symlkink
+      - name: Created workspace is not symlink
         shell: bash
         # Default dir name: ${workflow-yaml-name}-${job-name}
         run: |
