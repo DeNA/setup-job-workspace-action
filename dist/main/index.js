@@ -10116,7 +10116,8 @@ async function run() {
         const inputs = {
             workspaceName: core.getInput('workspace-name'),
             prefix: core.getInput('prefix'),
-            suffix: core.getInput('suffix')
+            suffix: core.getInput('suffix'),
+            workingDirectory: core.getInput('working-directory')
         };
         await (0, workspace_1.replaceWorkspace)(github.context, inputs);
     }
@@ -10181,6 +10182,12 @@ function createDirName(context, workspaceName, prefix, suffix) {
 }
 exports.createDirName = createDirName;
 async function replaceWorkspace(context, inputs) {
+    // cd ${WORKING_DIRECTORY}
+    if (inputs.workingDirectory !== '') {
+        const workingDirectory = path_1.default.resolve(inputs.workingDirectory);
+        core.info(`cd ${process.cwd()} -> ${workingDirectory}`);
+        process.chdir(workingDirectory);
+    }
     // mv ${GITHUB_WORKSPACE} ${GITHUB_WORKSPACE}.bak
     const workspacePath = (0, github_env_1.getWorkspacePath)();
     const workspaceBakPath = workspacePath + '.bak';
