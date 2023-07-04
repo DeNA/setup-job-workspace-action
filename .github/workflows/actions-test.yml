@@ -9,7 +9,7 @@ jobs:
   default_name:
     strategy:
       matrix:
-        runner: [ubuntu-latest, macos-latest, "windows-latest"]
+        runner: [ubuntu-latest, macos-latest, windows-latest]
       fail-fast: false
     runs-on: ${{ matrix.runner }}
     steps:
@@ -46,7 +46,7 @@ jobs:
   workspace_name:
     strategy:
       matrix:
-        runner: [ubuntu-latest, macos-latest, "windows-latest"]
+        runner: [ubuntu-latest, macos-latest, windows-latest]
       fail-fast: false
     runs-on: ${{ matrix.runner }}
     steps:
@@ -86,7 +86,7 @@ jobs:
   workspace_name_with_prefix_suffix:
     strategy:
       matrix:
-        runner: [ubuntu-latest, macos-latest, "windows-latest"]
+        runner: [ubuntu-latest, macos-latest, windows-latest]
       fail-fast: false
     runs-on: ${{ matrix.runner }}
     steps:
@@ -114,7 +114,7 @@ jobs:
   working_directory:
     strategy:
       matrix:
-        runner: [ubuntu-latest, macos-latest, "windows-latest"]
+        runner: [ubuntu-latest, macos-latest, windows-latest]
       fail-fast: false
     runs-on: ${{ matrix.runner }}
     steps:
