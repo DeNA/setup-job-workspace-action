@@ -1,4 +1,4 @@
-name: 'Actions integrate test'
+name: "Actions integrate test"
 on:
   pull_request:
   push:
@@ -9,11 +9,12 @@ jobs:
   default_name:
     strategy:
       matrix:
-        runner: [ubuntu-latest, macos-latest]
+        runner: [ubuntu-latest, macos-latest, windows-latest]
       fail-fast: false
     runs-on: ${{ matrix.runner }}
     steps:
       - name: $GITHUB_WORKSPACE is not symlink
+        shell: bash
         run: |
           if [ -L $GITHUB_WORKSPACE ]; then
             exit 1
@@ -21,12 +22,14 @@ jobs:
 
       - uses: actions/checkout@v3
       - uses: ./
-
       - name: $GITHUB_WORKSPACE is symlink
+        shell: bash
         run: test -L $GITHUB_WORKSPACE
-      - name: $GITHUB_WORKSPACE.bak is exists 
+      - name: $GITHUB_WORKSPACE.bak is exists
+        shell: bash
         run: test -d ${GITHUB_WORKSPACE}.bak
-      - name: Created workspace is not symlkink
+      - name: Created workspace is not symlink
+        shell: bash
         # Default dir name: ${workflow-yaml-name}-${job-name}
         run: |
           set -x
@@ -39,14 +42,16 @@ jobs:
       - name: Checkout to new workspace for action post process
         uses: actions/checkout@v3
         if: ${{ always() }}
+
   workspace_name:
     strategy:
       matrix:
-        runner: [ubuntu-latest, macos-latest]
+        runner: [ubuntu-latest, macos-latest, windows-latest]
       fail-fast: false
     runs-on: ${{ matrix.runner }}
     steps:
       - name: $GITHUB_WORKSPACE is not symlink
+        shell: bash
         run: |
           set -x
           if [ -L $GITHUB_WORKSPACE ]; then
@@ -59,10 +64,13 @@ jobs:
           workspace-name: test-dir
 
       - name: $GITHUB_WORKSPACE is symlink
+        shell: bash
         run: test -L $GITHUB_WORKSPACE
-      - name: $GITHUB_WORKSPACE.bak is exists 
+      - name: $GITHUB_WORKSPACE.bak is exists
+        shell: bash
         run: test -d ${GITHUB_WORKSPACE}.bak
-      - name: Created workspace is not symlkink
+      - name: Created workspace is not symlink
+        shell: bash
         run: |
           set -x
           ls -l $RUNNER_WORKSPACE
@@ -78,7 +86,7 @@ jobs:
   workspace_name_with_prefix_suffix:
     strategy:
       matrix:
-        runner: [ubuntu-latest, macos-latest]
+        runner: [ubuntu-latest, macos-latest, windows-latest]
       fail-fast: false
     runs-on: ${{ matrix.runner }}
     steps:
@@ -89,12 +97,55 @@ jobs:
           prefix: "Prefix-"
           suffix: "-Suffix"
 
-      - name: Created workspace is not symlkink
+      - name: Created workspace is not symlink
+        shell: bash
         run: |
           set -x
           ls -l $RUNNER_WORKSPACE
           test -d $RUNNER_WORKSPACE/prefix-test-dir-suffix
           if [ -L $RUNNER_WORKSPACE/prefix-test-dir-suffix ]; then
+            exit 1
+          fi
+
+      - name: Checkout to new workspace for action post process
+        uses: actions/checkout@v3
+        if: ${{ always() }}
+
+  working_directory:
+    strategy:
+      matrix:
+        runner: [ubuntu-latest, macos-latest, windows-latest]
+      fail-fast: false
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - name: $GITHUB_WORKSPACE is not symlink
+        shell: bash
+        run: |
+          set -x
+          if [ -L $GITHUB_WORKSPACE ]; then
+            exit 1
+          fi
+
+      - uses: actions/checkout@v3
+      # Windows must chdir node.js current directory from mv target directory. '..' should works desired.
+      - uses: ./
+        with:
+          working-directory: ".."
+
+      - name: $GITHUB_WORKSPACE is symlink
+        shell: bash
+        run: test -L $GITHUB_WORKSPACE
+      - name: $GITHUB_WORKSPACE.bak is exists
+        shell: bash
+        run: test -d ${GITHUB_WORKSPACE}.bak
+      - name: Created workspace is not symlink
+        shell: bash
+        # Default dir name: ${workflow-yaml-name}-${job-name}
+        run: |
+          set -x
+          ls -l $RUNNER_WORKSPACE
+          test -d $RUNNER_WORKSPACE/actions-test-working_directory
+          if [ -L $RUNNER_WORKSPACE/actions-test-working_directory ]; then
             exit 1
           fi
 

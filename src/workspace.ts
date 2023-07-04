@@ -21,8 +21,16 @@ export interface InputOptions {
   workspaceName: string
   prefix: string
   suffix: string
+  workingDirectory: string
 }
 export async function replaceWorkspace (context: Context, inputs: InputOptions): Promise<void> {
+  // cd ${WORKING_DIRECTORY}
+  if (inputs.workingDirectory !== '') {
+    const workingDirectory = path.resolve(inputs.workingDirectory)
+    core.info(`cd ${process.cwd()} -> ${workingDirectory}`)
+    process.chdir(workingDirectory)
+  }
+
   // mv ${GITHUB_WORKSPACE} ${GITHUB_WORKSPACE}.bak
   const workspacePath = getWorkspacePath()
   const workspaceBakPath = workspacePath + '.bak'
@@ -37,7 +45,7 @@ export async function replaceWorkspace (context: Context, inputs: InputOptions):
   core.info(`mkdir -p ${virtualWorkspacePath}`)
 
   // ln -s "${TMP_DIR}" ${GITHUB_WORKSPACE}
-  await fs.promises.symlink(virtualWorkspacePath, workspacePath)
+  await fs.promises.symlink(virtualWorkspacePath, workspacePath, 'dir')
   core.info(`ln -s ${virtualWorkspacePath} ${workspacePath}`)
 }
 
