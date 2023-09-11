@@ -10057,7 +10057,6 @@ function getWorkflowName() {
     const githubWorkflowRef = process.env.GITHUB_WORKFLOW_REF;
     if (githubWorkflowRef != null) {
         // env.GITHUB_WORKFLOW_REF is equal to ${{ github.workflow_ref }}. ex: `"DeNA/setup-job-workspace-action/.github/workflows/action-test.yml@refs/heads/test_branch`,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const workflowYaml = githubWorkflowRef.match(/(\.github\/workflows\/.+\.ya?ml)/)[0];
         core.debug(`Found GITHUB_WORKFLOW_REF. workflow yaml: ${workflowYaml}`);
         const yamlExtName = path_1.default.extname(workflowYaml);
