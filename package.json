@@ -11,11 +11,9 @@
     "build": "tsc",
     "package": "ncc build --source-map -o dist/main src/main.ts && ncc build --source-map -o dist/post src/post.ts",
     "package:commit": "npm run package && git add -u dist && git commit -m 'npm run package'",
-    "lint": "ts-standard src/**/*",
-    "lint:fix": "ts-standard --fix src/**/*",
     "test": "jest",
     "test:watch": "jest --watch",
-    "all": "npm run build && npm run lint && npm run package && npm test",
+    "all": "npm run build && npm run package && npm test",
     "prepare": "husky install"
   },
   "repository": {
@@ -40,7 +38,6 @@
     "jest": "^29.6.4",
     "js-yaml": "^4.1.0",
     "ts-jest": "^29.1.1",
-    "ts-standard": "^12.0.2",
     "typescript": "^5.2.2",
     "husky": "^8.0.3"
   }

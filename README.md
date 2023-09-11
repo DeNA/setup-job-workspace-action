@@ -140,7 +140,6 @@ This problem can be solved if each job has its own workspace and can reuse `.git
 
 ```bash
 npm run build
-npm run lint
 npm run test
 ```
 
