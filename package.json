@@ -14,7 +14,7 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "all": "npm run build && npm run package && npm test",
-    "prepare": "husky install"
+    "prepare": "husky"
   },
   "repository": {
     "type": "git",
