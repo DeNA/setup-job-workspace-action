@@ -3216,7 +3216,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getWorkflowName = exports.getRunnerWorkspacePath = exports.getWorkspacePath = void 0;
+exports.getWorkspacePath = getWorkspacePath;
+exports.getRunnerWorkspacePath = getRunnerWorkspacePath;
+exports.getWorkflowName = getWorkflowName;
 const path_1 = __importDefault(__nccwpck_require__(17));
 const core = __importStar(__nccwpck_require__(186));
 // /_work/self-hosted-sandbox/self-hosted-sandbox
@@ -3226,14 +3228,12 @@ function getWorkspacePath() {
     }
     return process.env.GITHUB_WORKSPACE;
 }
-exports.getWorkspacePath = getWorkspacePath;
 // /_work/self-hosted-sandbox
 function getRunnerWorkspacePath() {
     if (process.env.RUNNER_WORKSPACE === undefined)
         throw new Error('env RUNNER_WORKSPACE is undefined!');
     return process.env.RUNNER_WORKSPACE;
 }
-exports.getRunnerWorkspacePath = getRunnerWorkspacePath;
 function getWorkflowName() {
     const githubWorkflowRef = process.env.GITHUB_WORKFLOW_REF;
     if (githubWorkflowRef != null) {
@@ -3254,7 +3254,6 @@ function getWorkflowName() {
         throw new Error('Both env GITHUB_WORKFLOW_REF and GITHUB_WORKFLOW are undefined!');
     }
 }
-exports.getWorkflowName = getWorkflowName;
 
 
 /***/ }),
@@ -3338,7 +3337,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.restoreWorkspace = exports.replaceWorkspace = exports.createDirName = void 0;
+exports.createDirName = createDirName;
+exports.replaceWorkspace = replaceWorkspace;
+exports.restoreWorkspace = restoreWorkspace;
 const path_1 = __importDefault(__nccwpck_require__(17));
 const fs_1 = __importDefault(__nccwpck_require__(147));
 const core = __importStar(__nccwpck_require__(186));
@@ -3354,7 +3355,6 @@ function createDirName(context, workspaceName, prefix, suffix) {
     const workflowName = (0, github_env_1.getWorkflowName)();
     return escapeDirName(`${prefix}${workflowName}-${context.job}${suffix}`);
 }
-exports.createDirName = createDirName;
 async function replaceWorkspace(context, inputs) {
     // cd ${WORKING_DIRECTORY}
     if (inputs.workingDirectory !== '') {
@@ -3377,7 +3377,6 @@ async function replaceWorkspace(context, inputs) {
     await fs_1.default.promises.symlink(virtualWorkspacePath, workspacePath, 'dir');
     core.info(`ln -s ${virtualWorkspacePath} ${workspacePath}`);
 }
-exports.replaceWorkspace = replaceWorkspace;
 async function restoreWorkspace() {
     const workspacePath = (0, github_env_1.getWorkspacePath)();
     // unlink ${GITHUB_WORKSPACE}
@@ -3387,7 +3386,6 @@ async function restoreWorkspace() {
     await fs_1.default.promises.rename(`${workspacePath}.bak`, workspacePath);
     core.info(`mv ${workspacePath}.bak ${workspacePath}`);
 }
-exports.restoreWorkspace = restoreWorkspace;
 
 
 /***/ }),
