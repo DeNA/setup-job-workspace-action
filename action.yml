@@ -18,6 +18,6 @@ inputs:
     description: 'Set working-directory for nodejs. default: "" (Linux, macOS), ".." (Windows)'
     default: "${{ runner.os == 'Windows' && '..' || '' }}"
 runs:
-  using: 'node16'
+  using: 'node20'
   main: 'dist/main/index.js'
   post: 'dist/post/index.js'
