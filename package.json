@@ -35,7 +35,7 @@
   "devDependencies": {
     "@types/node": "^22.15.24",
     "@vercel/ncc": "^0.38.3",
-    "jest": "^30.0.1",
+    "jest": "^30.0.2",
     "js-yaml": "^4.1.0",
     "ts-jest": "^29.4.0",
     "typescript": "^5.8.3",
