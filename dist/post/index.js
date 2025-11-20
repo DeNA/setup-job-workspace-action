@@ -25860,8 +25860,9 @@ async function replaceWorkspace(context, inputs) {
     // TMP_DIR="/_work/${repository}/${WORKFLOW_YAML}-${{ github.job }}" or "${RUNNER_WORKSPACE}/${WORKFLOW_YAML}-${{ github.job }}"
     // mkdir -p ${TMP_DIR}
     const workspaceDirName = createDirName(context, inputs.workspaceName, inputs.prefix, inputs.suffix);
-    const virtualWorkspacePath = inputs.repositoryName !== ''
-        ? path_1.default.join(path_1.default.dirname((0, github_env_1.getRunnerWorkspacePath)()), inputs.repositoryName, workspaceDirName)
+    const sanitizedRepositoryName = inputs.repositoryName !== '' ? path_1.default.basename(inputs.repositoryName.trim()) : '';
+    const virtualWorkspacePath = sanitizedRepositoryName !== ''
+        ? path_1.default.join(path_1.default.dirname((0, github_env_1.getRunnerWorkspacePath)()), sanitizedRepositoryName, workspaceDirName)
         : path_1.default.join((0, github_env_1.getRunnerWorkspacePath)(), workspaceDirName);
     await io.mkdirP(virtualWorkspacePath);
     core.info(`mkdir -p ${virtualWorkspacePath}`);
