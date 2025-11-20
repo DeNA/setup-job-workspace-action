@@ -150,7 +150,7 @@ test('replaceWorkspace() with workingDirectory', async () => {
   expect(fs.readFileSync(virtualWorkspaceLinkFile, 'utf8')).toBe(dummyFileContent)
 })
 
-test('replaceWorkspace() with default input', async () => {
+test('replaceWorkspace() with repository name and default input', async () => {
   const inputs = {
     workspaceName: '',
     repositoryName: 'my_repository',
