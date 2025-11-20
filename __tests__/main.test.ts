@@ -86,18 +86,30 @@ test('createDirName() returns escaped default name with prefix and suffix', asyn
   await expect(actual).toEqual(`prefix-${workflowName}-test_job-suffix`)
 })
 
-test('replaceWorkspace() with workspaceName', async () => {
+/**
+ * Helper function to verify workspace replacement with repository name
+ */
+async function verifyWorkspaceWithRepository(
+  repositoryName: string,
+  workspaceName: string,
+  expectedRepoName: string,
+  workingDirectory: string = ''
+): Promise<void> {
   const inputs = {
-    workspaceName: 'test-dir',
-    repositoryName: 'my_repository',
+    workspaceName,
+    repositoryName,
     prefix: '',
     suffix: '',
-    workingDirectory: '',
+    workingDirectory,
   }
   await replaceWorkspace(contextMock, inputs)
 
   const runnerWorkParent = path.dirname(process.env.RUNNER_WORKSPACE!)
-  const virtualWorkspacePath = path.join(runnerWorkParent, inputs.repositoryName, inputs.workspaceName)
+  const virtualWorkspacePath = path.join(
+    runnerWorkParent,
+    expectedRepoName,
+    workspaceName || `${workflowName}-${jobName}`
+  )
 
   // Create dummy file to check symlink is valid or not.
   const virtualWorkspaceFile = path.join(virtualWorkspacePath, dummyFile)
@@ -116,70 +128,18 @@ test('replaceWorkspace() with workspaceName', async () => {
   expect(fs.readdirSync(process.env.GITHUB_WORKSPACE!)[0]).toBe(dummyFile)
   // /$GITHUB_WORKSPACE/${dummyFile} content is readable through symlink.
   expect(fs.readFileSync(virtualWorkspaceLinkFile, 'utf8')).toBe(dummyFileContent)
+}
+
+test('replaceWorkspace() with workspaceName', async () => {
+  await verifyWorkspaceWithRepository('my_repository', 'test-dir', 'my_repository')
 })
 
 test('replaceWorkspace() with workingDirectory', async () => {
-  const inputs = {
-    workspaceName: '',
-    repositoryName: 'my_repository',
-    prefix: '',
-    suffix: '',
-    workingDirectory: '..',
-  }
-  await replaceWorkspace(contextMock, inputs)
-
-  const runnerWorkParent = path.dirname(process.env.RUNNER_WORKSPACE!)
-  const virtualWorkspacePath = path.join(runnerWorkParent, inputs.repositoryName, `${workflowName}-${jobName}`)
-
-  // Create dummy file to check symlink is valid or not.
-  const virtualWorkspaceFile = path.join(virtualWorkspacePath, dummyFile)
-  await fs.promises.writeFile(virtualWorkspaceFile, dummyFileContent, 'utf8')
-  const virtualWorkspaceLinkFile = path.join(virtualWorkspacePath, dummyFile)
-
-  // /$RUNNER_WORKSPACE/{workspaceName}/ is exists
-  expect(fs.accessSync(virtualWorkspacePath)).toBeUndefined()
-  // /$GITHUB_WORKSPACE.bak/ is not symlink
-  expect(fs.lstatSync(`${process.env.GITHUB_WORKSPACE!}.bak`).isSymbolicLink()).toBe(false)
-  // /$GITHUB_WORKSPACE is symlink
-  expect(fs.lstatSync(process.env.GITHUB_WORKSPACE!).isSymbolicLink()).toBe(true)
-  // /$virtualWorkspaceFile is exists
-  expect(fs.existsSync(virtualWorkspaceFile)).toBe(true)
-  // /$GITHUB_WORKSPACE/${dummyFile} is directory symlink.
-  expect(fs.readdirSync(process.env.GITHUB_WORKSPACE!)[0]).toBe(dummyFile)
-  // /$GITHUB_WORKSPACE/${dummyFile} content is readable through symlink.
-  expect(fs.readFileSync(virtualWorkspaceLinkFile, 'utf8')).toBe(dummyFileContent)
+  await verifyWorkspaceWithRepository('my_repository', '', 'my_repository', '..')
 })
 
 test('replaceWorkspace() with repository name and default input', async () => {
-  const inputs = {
-    workspaceName: '',
-    repositoryName: 'my_repository',
-    prefix: '',
-    suffix: '',
-    workingDirectory: '',
-  }
-  await replaceWorkspace(contextMock, inputs)
-
-  const runnerWorkParent = path.dirname(process.env.RUNNER_WORKSPACE!)
-  const virtualWorkspacePath = path.join(runnerWorkParent, inputs.repositoryName, `${workflowName}-${jobName}`)
-
-  // Create dummy file to check symlink is valid or not.
-  const virtualWorkspaceFile = path.join(virtualWorkspacePath, dummyFile)
-  await fs.promises.writeFile(virtualWorkspaceFile, dummyFileContent, 'utf8')
-  const virtualWorkspaceLinkFile = path.join(virtualWorkspacePath, dummyFile)
-
-  // /$RUNNER_WORKSPACE/{workspaceName}/ is exists
-  expect(fs.accessSync(virtualWorkspacePath)).toBeUndefined()
-  // /$GITHUB_WORKSPACE.bak/ is not symlink
-  expect(fs.lstatSync(`${process.env.GITHUB_WORKSPACE!}.bak`).isSymbolicLink()).toBe(false)
-  // /$GITHUB_WORKSPACE is symlink
-  expect(fs.lstatSync(process.env.GITHUB_WORKSPACE!).isSymbolicLink()).toBe(true)
-  // /$virtualWorkspaceFile is exists
-  expect(fs.existsSync(virtualWorkspaceFile)).toBe(true)
-  // /$GITHUB_WORKSPACE/${dummyFile} is directory symlink.
-  expect(fs.readdirSync(process.env.GITHUB_WORKSPACE!)[0]).toBe(dummyFile)
-  // /$GITHUB_WORKSPACE/${dummyFile} content is readable through symlink.
-  expect(fs.readFileSync(virtualWorkspaceLinkFile, 'utf8')).toBe(dummyFileContent)
+  await verifyWorkspaceWithRepository('my_repository', '', 'my_repository')
 })
 
 test('replaceWorkspace() with empty repository', async () => {
@@ -245,133 +205,21 @@ test('replaceWorkspace() with empty repository and default input', async () => {
 })
 
 test('replaceWorkspace() with repository name containing path separator', async () => {
-  const inputs = {
-    workspaceName: 'test-dir',
-    repositoryName: 'org/my_repository',
-    prefix: '',
-    suffix: '',
-    workingDirectory: '',
-  }
-  await replaceWorkspace(contextMock, inputs)
-
   // Should use only the basename (my_repository) not the full path
-  const runnerWorkParent = path.dirname(process.env.RUNNER_WORKSPACE!)
-  const virtualWorkspacePath = path.join(runnerWorkParent, 'my_repository', inputs.workspaceName)
-
-  // Create dummy file to check symlink is valid or not.
-  const virtualWorkspaceFile = path.join(virtualWorkspacePath, dummyFile)
-  await fs.promises.writeFile(virtualWorkspaceFile, dummyFileContent, 'utf8')
-  const virtualWorkspaceLinkFile = path.join(virtualWorkspacePath, dummyFile)
-
-  // /$RUNNER_WORKSPACE/{workspaceName}/ is exists
-  expect(fs.accessSync(virtualWorkspacePath)).toBeUndefined()
-  // /$GITHUB_WORKSPACE.bak/ is not symlink
-  expect(fs.lstatSync(`${process.env.GITHUB_WORKSPACE!}.bak`).isSymbolicLink()).toBe(false)
-  // /$GITHUB_WORKSPACE is symlink
-  expect(fs.lstatSync(process.env.GITHUB_WORKSPACE!).isSymbolicLink()).toBe(true)
-  // /$virtualWorkspaceFile is exists
-  expect(fs.existsSync(virtualWorkspaceFile)).toBe(true)
-  // /$GITHUB_WORKSPACE/${dummyFile} is directory symlink.
-  expect(fs.readdirSync(process.env.GITHUB_WORKSPACE!)[0]).toBe(dummyFile)
-  // /$GITHUB_WORKSPACE/${dummyFile} content is readable through symlink.
-  expect(fs.readFileSync(virtualWorkspaceLinkFile, 'utf8')).toBe(dummyFileContent)
+  await verifyWorkspaceWithRepository('org/my_repository', 'test-dir', 'my_repository')
 })
 
 test('replaceWorkspace() with repository name containing whitespace', async () => {
-  const inputs = {
-    workspaceName: 'test-dir',
-    repositoryName: '  my_repository  ',
-    prefix: '',
-    suffix: '',
-    workingDirectory: '',
-  }
-  await replaceWorkspace(contextMock, inputs)
-
   // Should trim whitespace
-  const runnerWorkParent = path.dirname(process.env.RUNNER_WORKSPACE!)
-  const virtualWorkspacePath = path.join(runnerWorkParent, 'my_repository', inputs.workspaceName)
-
-  // Create dummy file to check symlink is valid or not.
-  const virtualWorkspaceFile = path.join(virtualWorkspacePath, dummyFile)
-  await fs.promises.writeFile(virtualWorkspaceFile, dummyFileContent, 'utf8')
-  const virtualWorkspaceLinkFile = path.join(virtualWorkspacePath, dummyFile)
-
-  // /$RUNNER_WORKSPACE/{workspaceName}/ is exists
-  expect(fs.accessSync(virtualWorkspacePath)).toBeUndefined()
-  // /$GITHUB_WORKSPACE.bak/ is not symlink
-  expect(fs.lstatSync(`${process.env.GITHUB_WORKSPACE!}.bak`).isSymbolicLink()).toBe(false)
-  // /$GITHUB_WORKSPACE is symlink
-  expect(fs.lstatSync(process.env.GITHUB_WORKSPACE!).isSymbolicLink()).toBe(true)
-  // /$virtualWorkspaceFile is exists
-  expect(fs.existsSync(virtualWorkspaceFile)).toBe(true)
-  // /$GITHUB_WORKSPACE/${dummyFile} is directory symlink.
-  expect(fs.readdirSync(process.env.GITHUB_WORKSPACE!)[0]).toBe(dummyFile)
-  // /$GITHUB_WORKSPACE/${dummyFile} content is readable through symlink.
-  expect(fs.readFileSync(virtualWorkspaceLinkFile, 'utf8')).toBe(dummyFileContent)
+  await verifyWorkspaceWithRepository('  my_repository  ', 'test-dir', 'my_repository')
 })
 
 test('replaceWorkspace() with repository name containing relative path', async () => {
-  const inputs = {
-    workspaceName: 'test-dir',
-    repositoryName: '../my_repository',
-    prefix: '',
-    suffix: '',
-    workingDirectory: '',
-  }
-  await replaceWorkspace(contextMock, inputs)
-
   // Should use only the basename (my_repository) not the relative path
-  const runnerWorkParent = path.dirname(process.env.RUNNER_WORKSPACE!)
-  const virtualWorkspacePath = path.join(runnerWorkParent, 'my_repository', inputs.workspaceName)
-
-  // Create dummy file to check symlink is valid or not.
-  const virtualWorkspaceFile = path.join(virtualWorkspacePath, dummyFile)
-  await fs.promises.writeFile(virtualWorkspaceFile, dummyFileContent, 'utf8')
-  const virtualWorkspaceLinkFile = path.join(virtualWorkspacePath, dummyFile)
-
-  // /$RUNNER_WORKSPACE/{workspaceName}/ is exists
-  expect(fs.accessSync(virtualWorkspacePath)).toBeUndefined()
-  // /$GITHUB_WORKSPACE.bak/ is not symlink
-  expect(fs.lstatSync(`${process.env.GITHUB_WORKSPACE!}.bak`).isSymbolicLink()).toBe(false)
-  // /$GITHUB_WORKSPACE is symlink
-  expect(fs.lstatSync(process.env.GITHUB_WORKSPACE!).isSymbolicLink()).toBe(true)
-  // /$virtualWorkspaceFile is exists
-  expect(fs.existsSync(virtualWorkspaceFile)).toBe(true)
-  // /$GITHUB_WORKSPACE/${dummyFile} is directory symlink.
-  expect(fs.readdirSync(process.env.GITHUB_WORKSPACE!)[0]).toBe(dummyFile)
-  // /$GITHUB_WORKSPACE/${dummyFile} content is readable through symlink.
-  expect(fs.readFileSync(virtualWorkspaceLinkFile, 'utf8')).toBe(dummyFileContent)
+  await verifyWorkspaceWithRepository('../my_repository', 'test-dir', 'my_repository')
 })
 
 test('replaceWorkspace() with repository name containing parent directory references', async () => {
-  const inputs = {
-    workspaceName: 'test-dir',
-    repositoryName: '../../my_repository',
-    prefix: '',
-    suffix: '',
-    workingDirectory: '',
-  }
-  await replaceWorkspace(contextMock, inputs)
-
   // Should use only the basename (my_repository) not the parent directory references
-  const runnerWorkParent = path.dirname(process.env.RUNNER_WORKSPACE!)
-  const virtualWorkspacePath = path.join(runnerWorkParent, 'my_repository', inputs.workspaceName)
-
-  // Create dummy file to check symlink is valid or not.
-  const virtualWorkspaceFile = path.join(virtualWorkspacePath, dummyFile)
-  await fs.promises.writeFile(virtualWorkspaceFile, dummyFileContent, 'utf8')
-  const virtualWorkspaceLinkFile = path.join(virtualWorkspacePath, dummyFile)
-
-  // /$RUNNER_WORKSPACE/{workspaceName}/ is exists
-  expect(fs.accessSync(virtualWorkspacePath)).toBeUndefined()
-  // /$GITHUB_WORKSPACE.bak/ is not symlink
-  expect(fs.lstatSync(`${process.env.GITHUB_WORKSPACE!}.bak`).isSymbolicLink()).toBe(false)
-  // /$GITHUB_WORKSPACE is symlink
-  expect(fs.lstatSync(process.env.GITHUB_WORKSPACE!).isSymbolicLink()).toBe(true)
-  // /$virtualWorkspaceFile is exists
-  expect(fs.existsSync(virtualWorkspaceFile)).toBe(true)
-  // /$GITHUB_WORKSPACE/${dummyFile} is directory symlink.
-  expect(fs.readdirSync(process.env.GITHUB_WORKSPACE!)[0]).toBe(dummyFile)
-  // /$GITHUB_WORKSPACE/${dummyFile} content is readable through symlink.
-  expect(fs.readFileSync(virtualWorkspaceLinkFile, 'utf8')).toBe(dummyFileContent)
+  await verifyWorkspaceWithRepository('../../my_repository', 'test-dir', 'my_repository')
 })
