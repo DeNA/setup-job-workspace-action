@@ -42,8 +42,9 @@ export async function replaceWorkspace (context: Context, inputs: InputOptions):
   // TMP_DIR="/_work/${repository}/${WORKFLOW_YAML}-${{ github.job }}" or "${RUNNER_WORKSPACE}/${WORKFLOW_YAML}-${{ github.job }}"
   // mkdir -p ${TMP_DIR}
   const workspaceDirName = createDirName(context, inputs.workspaceName, inputs.prefix, inputs.suffix)
-  const virtualWorkspacePath = inputs.repositoryName !== ''
-    ? path.join(path.dirname(getRunnerWorkspacePath()), inputs.repositoryName, workspaceDirName)
+  const sanitizedRepositoryName = inputs.repositoryName !== '' ? path.basename(inputs.repositoryName.trim()) : ''
+  const virtualWorkspacePath = sanitizedRepositoryName !== ''
+    ? path.join(path.dirname(getRunnerWorkspacePath()), sanitizedRepositoryName, workspaceDirName)
     : path.join(getRunnerWorkspacePath(), workspaceDirName)
   await io.mkdirP(virtualWorkspacePath)
   core.info(`mkdir -p ${virtualWorkspacePath}`)
