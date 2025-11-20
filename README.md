@@ -70,7 +70,8 @@ jobs:
         with:
           # You can specify a different repository name to reuse workspace from another repository.
           # This is useful when you want to share workspace and cache between different repositories.
-          # The workspace path will be: /home/runner/work/{repository-name}/{workspace-name}
+          # The workspace path will be: {parent of RUNNER_WORKSPACE}/{repository-name}/{workspace-name}
+          #   (typically /home/runner/work/{repository-name}/{workspace-name} on GitHub-hosted runners)
           # If not specified (default), the workspace path will be: {RUNNER_WORKSPACE}/{workspace-name}
           repository-name: my-shared-repository
       - uses: actions/checkout@v3
