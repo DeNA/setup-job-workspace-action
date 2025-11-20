@@ -31,6 +31,7 @@ beforeEach(async () => {
   // Do main step of own actions before each test
   const inputs = {
     workspaceName: '',
+    repositoryName: 'my_repository',
     prefix: '',
     suffix: '',
     workingDirectory: '',
@@ -46,7 +47,8 @@ afterEach(async () => {
 test('restoreWorkspace()', async () => {
   await restoreWorkspace()
 
-  const virtualWorkspacePath = path.join(process.env.RUNNER_WORKSPACE!, `${workflowName}-${jobName}`)
+  const runnerWorkParent = path.dirname(process.env.RUNNER_WORKSPACE!)
+  const virtualWorkspacePath = path.join(runnerWorkParent, 'my_repository', `${workflowName}-${jobName}`)
 
   // /$GITHUB_WORKSPACE.bak/ is not exists
   expect(() => {

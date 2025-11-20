@@ -5,6 +5,10 @@ inputs:
   workspace-name:
     required: false
     description: 'Input workspace directory name if you need to change from default: ${workspace-yaml-name}-${job-name}'
+  repository-name:
+    required: false
+    description: 'Set repository name for workspace directory path. default: ""'
+    default: ""
   prefix:
     required: false
     description: 'Set prefix for workspace directory name. default: ""'
