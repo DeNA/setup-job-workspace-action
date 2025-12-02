@@ -6,6 +6,7 @@ async function run (): Promise<void> {
   try {
     const inputs: InputOptions = {
       workspaceName: core.getInput('workspace-name'),
+      repositoryName: core.getInput('repository-name'),
       prefix: core.getInput('prefix'),
       suffix: core.getInput('suffix'),
       workingDirectory: core.getInput('working-directory')

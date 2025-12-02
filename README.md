@@ -62,6 +62,21 @@ jobs:
       - uses: actions/checkout@v3
 
       # ... your build steps
+
+  with_repository_name:
+    runs-on: [self-hosted]
+    steps:
+      - uses: DeNA/setup-job-workspace-action@v2
+        with:
+          # You can specify a different repository name to reuse workspace from another repository.
+          # This is useful when you want to share workspace and cache between different repositories.
+          # The workspace path will be: {parent of RUNNER_WORKSPACE}/{repository-name}/{workspace-name}
+          #   (typically /home/runner/work/{repository-name}/{workspace-name} on GitHub-hosted runners)
+          # If not specified (default), the workspace path will be: {RUNNER_WORKSPACE}/{workspace-name}
+          repository-name: my-shared-repository
+      - uses: actions/checkout@v3
+
+      # ... your build steps
 ```
 
 ### Example

@@ -19,6 +19,7 @@ export function createDirName (context: Context, workspaceName: string, prefix: 
 
 export interface InputOptions {
   workspaceName: string
+  repositoryName: string
   prefix: string
   suffix: string
   workingDirectory: string
@@ -38,9 +39,13 @@ export async function replaceWorkspace (context: Context, inputs: InputOptions):
   core.info(`mv ${workspacePath} ${workspaceBakPath}`)
 
   // WORKFLOW_YAML=$(basename "${{ github.event.workflow }}" .yml)
-  // TMP_DIR="${RUNNER_WORKSPACE}/${WORKFLOW_YAML}-${{ github.job }}"
+  // TMP_DIR="/_work/${repository}/${WORKFLOW_YAML}-${{ github.job }}" or "${RUNNER_WORKSPACE}/${WORKFLOW_YAML}-${{ github.job }}"
   // mkdir -p ${TMP_DIR}
-  const virtualWorkspacePath = path.join(getRunnerWorkspacePath(), createDirName(context, inputs.workspaceName, inputs.prefix, inputs.suffix))
+  const workspaceDirName = createDirName(context, inputs.workspaceName, inputs.prefix, inputs.suffix)
+  const sanitizedRepositoryName = inputs.repositoryName !== '' ? path.basename(inputs.repositoryName.trim()) : ''
+  const virtualWorkspacePath = sanitizedRepositoryName !== ''
+    ? path.join(path.dirname(getRunnerWorkspacePath()), sanitizedRepositoryName, workspaceDirName)
+    : path.join(getRunnerWorkspacePath(), workspaceDirName)
   await io.mkdirP(virtualWorkspacePath)
   core.info(`mkdir -p ${virtualWorkspacePath}`)
 
