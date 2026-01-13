@@ -22,6 +22,6 @@ inputs:
     description: 'Set working-directory for nodejs. default: "" (Linux, macOS), ".." (Windows)'
     default: "${{ runner.os == 'Windows' && '..' || '' }}"
 runs:
-  using: 'node20'
+  using: 'node24'
   main: 'dist/main/index.js'
   post: 'dist/post/index.js'
