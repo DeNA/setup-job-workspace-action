@@ -13,19 +13,19 @@ jobs:
     runs-on: [self-hosted]
     steps:
       # Must use before actions/checkout
-      - uses: DeNA/setup-job-workspace-action@v2
-      - uses: actions/checkout@v3
+      - uses: DeNA/setup-job-workspace-action@v4
+      - uses: actions/checkout@v6
 
       # ... your build steps
 
   given_dir_name:
     runs-on: [self-hosted]
     steps:
-      - uses: DeNA/setup-job-workspace-action@v2
+      - uses: DeNA/setup-job-workspace-action@v4
         with:
           # You can change workspace name from default: ${workflow-yaml-name}-${job-name}
           workspace-name: foo_bar_workspace
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
 
       # ... your build steps
 
@@ -34,7 +34,7 @@ jobs:
     steps:
       # If you want to change workspace-name dynamically, actions/github-script or run bash script is useful.
       # This example changes workspace-name by branch name when triggered by "workflow_dispatch".
-      - uses: actions/github-script@v6
+      - uses: actions/github-script@v8
         id: set-workspace-name
         with:
           result-encoding: string
@@ -43,7 +43,7 @@ jobs:
             return (context.eventName === "workflow_dispatch")
               ? `manual_trigger_${branch}`
               : "default"
-      - uses: DeNA/setup-job-workspace-action@v2
+      - uses: DeNA/setup-job-workspace-action@v4
         with:
           workspace-name: ${{ steps.set-workspace-name.outputs.result }}
       - uses: actions/checkout@v3
@@ -53,20 +53,20 @@ jobs:
   with_prefix_and_suffix:
     runs-on: [self-hosted]
     steps:
-      - uses: DeNA/setup-job-workspace-action@v2
+      - uses: DeNA/setup-job-workspace-action@v4
         with:
           # You can set prefix and suffix to default workspace name and also `workspace-name`.
           # ex: "prefix-${workflow-yaml-name}-${job-name}-suffix"
           prefix: "prefix-"
           suffix: "-suffix"
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
 
       # ... your build steps
 
   with_repository_name:
     runs-on: [self-hosted]
     steps:
-      - uses: DeNA/setup-job-workspace-action@v2
+      - uses: DeNA/setup-job-workspace-action@v4
         with:
           # You can specify a different repository name to reuse workspace from another repository.
           # This is useful when you want to share workspace and cache between different repositories.
@@ -74,7 +74,7 @@ jobs:
           #   (typically /home/runner/work/{repository-name}/{workspace-name} on GitHub-hosted runners)
           # If not specified (default), the workspace path will be: {RUNNER_WORKSPACE}/{workspace-name}
           repository-name: my-shared-repository
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
 
       # ... your build steps
 ```
@@ -89,11 +89,11 @@ jobs:
     runs-on: [self-hosted]
     steps:
       - name: Switch workspace
-        uses: DeNA/setup-job-workspace-action@v2
+        uses: DeNA/setup-job-workspace-action@v4
         with:
           # Change path by build option
           suffix: "${{ (inputs.enable_XXX && '-XXX') || '' }}"
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
         with:
           # Clean everything by build option
           clean: ${{ inputs.clean || false }}
