@@ -46,7 +46,7 @@ jobs:
       - uses: DeNA/setup-job-workspace-action@v4
         with:
           workspace-name: ${{ steps.set-workspace-name.outputs.result }}
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
 
       # ... your build steps
 
