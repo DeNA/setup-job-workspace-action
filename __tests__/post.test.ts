@@ -7,7 +7,7 @@ import { replaceWorkspace, restoreWorkspace } from '../src/workspace'
 
 const workflowName = 'test'
 const jobName = 'testjob'
-const githubWorkflow = "Test workflow"
+const githubWorkflow = 'Test workflow'
 const githubWorkflowRef = `"DeNA/setup-job-workspace-action/.github/workflows/${workflowName}.yml@refs/heads/test_branch`
 const contextMock = {
   workflow: githubWorkflow, // It same as `name` in workflow.yml. It is confusing with `workflow_ref`, so include it in mock.
@@ -24,7 +24,7 @@ beforeEach(async () => {
     RUNNER_WORKSPACE: `${path.join(tmpDirPath, 'testRepo')}`,
     GITHUB_WORKSPACE: `${path.join(tmpDirPath, 'testRepo', 'testRepo')}`,
     GITHUB_WORKFLOW: githubWorkflow,
-    GITHUB_WORKFLOW_REF: githubWorkflowRef,
+    GITHUB_WORKFLOW_REF: githubWorkflowRef
   }
   await fs.promises.mkdir(process.env.GITHUB_WORKSPACE!, { recursive: true })
 
@@ -34,7 +34,7 @@ beforeEach(async () => {
     repositoryName: 'my_repository',
     prefix: '',
     suffix: '',
-    workingDirectory: '',
+    workingDirectory: ''
   }
   await replaceWorkspace(contextMock, inputs)
 })
@@ -48,14 +48,20 @@ test('restoreWorkspace()', async () => {
   await restoreWorkspace()
 
   const runnerWorkParent = path.dirname(process.env.RUNNER_WORKSPACE!)
-  const virtualWorkspacePath = path.join(runnerWorkParent, 'my_repository', `${workflowName}-${jobName}`)
+  const virtualWorkspacePath = path.join(
+    runnerWorkParent,
+    'my_repository',
+    `${workflowName}-${jobName}`
+  )
 
   // /$GITHUB_WORKSPACE.bak/ is not exists
   expect(() => {
     fs.accessSync(`${process.env.GITHUB_WORKSPACE!}.bak`)
   }).toThrow()
   // /$GITHUB_WORKSPACE/ is not symlink
-  expect(fs.lstatSync(`${process.env.GITHUB_WORKSPACE!}`).isSymbolicLink()).toBe(false)
+  expect(
+    fs.lstatSync(`${process.env.GITHUB_WORKSPACE!}`).isSymbolicLink()
+  ).toBe(false)
   // virtual workspace is exists
   expect(fs.accessSync(virtualWorkspacePath)).toBeUndefined()
 })

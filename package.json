@@ -1,21 +1,11 @@
 {
   "name": "setup-job-workspacce-action",
   "version": "0.0.0",
+  "author": "DeNA Co., Ltd.",
+  "type": "module",
   "private": true,
   "description": "A action create workspace to checkout repository for each jobs",
-  "main": "lib/main.js",
-  "engines": {
-    "node": ">=24.13.0"
-  },
-  "scripts": {
-    "build": "tsc",
-    "package": "ncc build --source-map -o dist/main src/main.ts && ncc build --source-map -o dist/post src/post.ts",
-    "package:commit": "npm run package && git add -u dist && git commit -m 'npm run package'",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "all": "npm run build && npm run package && npm test",
-    "prepare": "husky"
-  },
+  "homepage": "https://github.com/DeNA/setup-job-workspace-action",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/DeNA/setup-job-workspace-action.git"
@@ -25,7 +15,28 @@
     "node",
     "setup"
   ],
-  "author": "kesin1202000@gmail.com",
+  "bugs": {
+    "url": "https://github.com/DeNA/setup-job-workspace-action/issues"
+  },
+  "exports": {
+    ".": "./dist/main/index.js"
+  },
+  "engines": {
+    "node": ">=24.13.0"
+  },
+  "scripts": {
+    "bundle": "npm run format:write && npm run package",
+    "ci-test": "NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 npx jest --passWithNoTests",
+    "coverage": "npx make-coverage-badge --output-path ./badges/coverage.svg",
+    "format:write": "npx prettier --write **/*.ts",
+    "format:check": "npx prettier --check **/*.ts",
+    "lint": "npx eslint .",
+    "package": "npx rollup --config rollup.config.ts --configPlugin @rollup/plugin-typescript",
+    "package:watch": "npm run package -- --watch",
+    "test": "NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 npx jest --passWithNoTests",
+    "all": "npm run format:write && npm run lint && npm run test && npm run coverage && npm run package",
+    "prepare": "husky"
+  },
   "license": "MIT",
   "dependencies": {
     "@actions/core": "^2.0.3",
@@ -33,12 +44,33 @@
     "@actions/io": "^2.0.0"
   },
   "devDependencies": {
+    "@eslint/compat": "^2.0.0",
+    "@jest/globals": "^30.2.0",
+    "@rollup/plugin-commonjs": "^29.0.0",
+    "@rollup/plugin-node-resolve": "^16.0.3",
+    "@rollup/plugin-typescript": "^12.3.0",
+    "@types/jest": "^30.0.0",
     "@types/node": "^24.10.9",
-    "@vercel/ncc": "^0.38.4",
+    "@types/uuid": "^11.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.48.0",
+    "@typescript-eslint/parser": "^8.32.1",
+    "eslint": "^9.39.1",
+    "eslint-plugin-jest": "^29.2.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-import-resolver-typescript": "^4.4.4",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-prettier": "^5.5.4",
     "jest": "^30.2.0",
-    "js-yaml": "^4.1.1",
+    "make-coverage-badge": "^1.2.0",
+    "prettier": "^3.7.3",
+    "prettier-eslint": "^16.4.2",
+    "rollup": "^4.53.3",
     "ts-jest": "^29.4.6",
+    "ts-jest-resolver": "^2.0.1",
     "typescript": "^5.9.3",
     "husky": "^9.1.7"
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "*"
   }
 }
