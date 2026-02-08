@@ -1,8 +1,8 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
-import { InputOptions, replaceWorkspace } from './workspace'
+import { InputOptions, replaceWorkspace } from './workspace.js'
 
-async function run (): Promise<void> {
+async function run(): Promise<void> {
   try {
     const inputs: InputOptions = {
       workspaceName: core.getInput('workspace-name'),

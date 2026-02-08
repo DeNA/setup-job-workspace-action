@@ -154,7 +154,7 @@ This problem can be solved if each job has its own workspace and can reuse `.git
 ## Development
 
 ```bash
-npm run build
+npm run bundle
 npm run test
 ```
 
