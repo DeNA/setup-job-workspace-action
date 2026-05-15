@@ -38,7 +38,7 @@
     "jest": "^30.4.2",
     "js-yaml": "^4.1.1",
     "ts-jest": "^29.4.9",
-    "typescript": "^5.9.3",
+    "typescript": "^6.0.3",
     "husky": "^9.1.7"
   }
 }
