@@ -3,15 +3,25 @@ import fs from 'fs'
 import * as core from '@actions/core'
 import * as io from '@actions/io'
 import { Context } from '@actions/github/lib/context'
-import { getRunnerWorkspacePath, getWorkflowName, getWorkspacePath } from './github_env'
+import {
+  getRunnerWorkspacePath,
+  getWorkflowName,
+  getWorkspacePath
+} from './github_env.js'
 
-function escapeDirName (rawDirName: string): string {
+function escapeDirName(rawDirName: string): string {
   return rawDirName.trim().replace(/\s/g, '_').toLowerCase()
 }
 
-export function createDirName (context: Context, workspaceName: string, prefix: string, suffix: string): string {
+export function createDirName(
+  context: Context,
+  workspaceName: string,
+  prefix: string,
+  suffix: string
+): string {
   core.debug(`workspaceName: ${workspaceName}`)
-  if (workspaceName !== '') return escapeDirName(`${prefix}${workspaceName}${suffix}`)
+  if (workspaceName !== '')
+    return escapeDirName(`${prefix}${workspaceName}${suffix}`)
 
   const workflowName = getWorkflowName()
   return escapeDirName(`${prefix}${workflowName}-${context.job}${suffix}`)
@@ -24,7 +34,10 @@ export interface InputOptions {
   suffix: string
   workingDirectory: string
 }
-export async function replaceWorkspace (context: Context, inputs: InputOptions): Promise<void> {
+export async function replaceWorkspace(
+  context: Context,
+  inputs: InputOptions
+): Promise<void> {
   // cd ${WORKING_DIRECTORY}
   if (inputs.workingDirectory !== '') {
     const workingDirectory = path.resolve(inputs.workingDirectory)
@@ -41,11 +54,24 @@ export async function replaceWorkspace (context: Context, inputs: InputOptions):
   // WORKFLOW_YAML=$(basename "${{ github.event.workflow }}" .yml)
   // TMP_DIR="/_work/${repository}/${WORKFLOW_YAML}-${{ github.job }}" or "${RUNNER_WORKSPACE}/${WORKFLOW_YAML}-${{ github.job }}"
   // mkdir -p ${TMP_DIR}
-  const workspaceDirName = createDirName(context, inputs.workspaceName, inputs.prefix, inputs.suffix)
-  const sanitizedRepositoryName = inputs.repositoryName !== '' ? path.basename(inputs.repositoryName.trim()) : ''
-  const virtualWorkspacePath = sanitizedRepositoryName !== ''
-    ? path.join(path.dirname(getRunnerWorkspacePath()), sanitizedRepositoryName, workspaceDirName)
-    : path.join(getRunnerWorkspacePath(), workspaceDirName)
+  const workspaceDirName = createDirName(
+    context,
+    inputs.workspaceName,
+    inputs.prefix,
+    inputs.suffix
+  )
+  const sanitizedRepositoryName =
+    inputs.repositoryName !== ''
+      ? path.basename(inputs.repositoryName.trim())
+      : ''
+  const virtualWorkspacePath =
+    sanitizedRepositoryName !== ''
+      ? path.join(
+          path.dirname(getRunnerWorkspacePath()),
+          sanitizedRepositoryName,
+          workspaceDirName
+        )
+      : path.join(getRunnerWorkspacePath(), workspaceDirName)
   await io.mkdirP(virtualWorkspacePath)
   core.info(`mkdir -p ${virtualWorkspacePath}`)
 
@@ -54,7 +80,7 @@ export async function replaceWorkspace (context: Context, inputs: InputOptions):
   core.info(`ln -s ${virtualWorkspacePath} ${workspacePath}`)
 }
 
-export async function restoreWorkspace (): Promise<void> {
+export async function restoreWorkspace(): Promise<void> {
   const workspacePath = getWorkspacePath()
   // unlink ${GITHUB_WORKSPACE}
   await fs.promises.unlink(workspacePath)

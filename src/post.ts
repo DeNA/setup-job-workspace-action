@@ -1,7 +1,7 @@
 import * as core from '@actions/core'
-import { restoreWorkspace } from './workspace'
+import { restoreWorkspace } from './workspace.js'
 
-async function run (): Promise<void> {
+async function run(): Promise<void> {
   try {
     core.debug('Post process')
     await restoreWorkspace()
