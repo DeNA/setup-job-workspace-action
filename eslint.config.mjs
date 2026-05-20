@@ -68,9 +68,6 @@ export default [
 
     rules: {
       camelcase: 'off',
-      'eslint-comments/no-use': 'off',
-      'eslint-comments/no-unused-disable': 'off',
-      'i18n-text/no-en': 'off',
       'import/no-namespace': 'off',
       'no-console': 'off',
       'no-shadow': 'off',
