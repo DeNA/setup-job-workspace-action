@@ -1,5 +1,5 @@
 import { describe, expect, test, beforeEach, afterEach } from '@jest/globals'
-import { getWorkflowName } from '../src/github_env'
+import { getWorkflowName } from '../src/github_env.js'
 
 const origEnv = process.env
 

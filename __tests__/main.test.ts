@@ -3,7 +3,7 @@ import os from 'os'
 import fs from 'fs'
 import { Context } from '@actions/github/lib/context'
 import { expect, test, beforeEach, afterEach } from '@jest/globals'
-import { createDirName, replaceWorkspace } from '../src/workspace'
+import { createDirName, replaceWorkspace } from '../src/workspace.js'
 
 const workflowName = 'test'
 const jobName = 'testjob'
