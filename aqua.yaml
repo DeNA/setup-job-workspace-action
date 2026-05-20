@@ -1,0 +1,20 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/aquaproj/aqua/main/json-schema/aqua-yaml.json
+# aqua - Declarative CLI Version Manager
+# https://aquaproj.github.io/
+# checksum:
+#   enabled: true
+#   require_checksum: true
+#   supported_envs:
+#   - all
+registries:
+  - type: standard
+    ref: v4.513.1 # renovate: depName=aquaproj/aqua-registry
+packages:
+  - name: suzuki-shunsuke/pinact@v3.10.1
+    tags:
+      - dev
+  - name: zizmorcore/zizmor@v1.25.2
+    tags:
+      - dev
+      - ci
