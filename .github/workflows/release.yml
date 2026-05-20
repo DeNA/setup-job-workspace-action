@@ -7,11 +7,14 @@ on:
 jobs:
   draft_release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     outputs:
       tag_name: ${{ steps.release-drafter.outputs.tag_name }}
     steps:
       # Get next version
-      - uses: release-drafter/release-drafter@v7
+      - uses: release-drafter/release-drafter@c2e2804cc59f45f57076a99af580d0fedb697927 # v7.3.0
         id: release-drafter
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -20,10 +23,13 @@ jobs:
     name: Release
     environment: prod
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     if: github.event_name == 'workflow_dispatch'
     needs: draft_release
     steps:
-      - uses: release-drafter/release-drafter@v7
+      - uses: release-drafter/release-drafter@c2e2804cc59f45f57076a99af580d0fedb697927 # v7.3.0
         id: release-drafter
         with:
           publish: true
@@ -32,9 +38,11 @@ jobs:
       - name: Create semver outputs
         uses: actions/github-script@v9
         id: semver
+        env:
+          TAG_NAME: ${{ steps.release-drafter.outputs.tag_name }}
         with:
           script: |
-            const VERSION = "${{ steps.release-drafter.outputs.tag_name }}"
+            const VERSION = process.env.TAG_NAME
             const matched = VERSION.match(/(((v\d+)\.\d+).\d+)/)
             core.setOutput('major', matched[3])
             core.setOutput('minor', matched[2])
@@ -42,7 +50,15 @@ jobs:
       - uses: actions/checkout@v6
         with:
           ref: "${{ steps.release-drafter.outputs.tag_name }}"
+          persist-credentials: false
       - name: Update major and minor git tags
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG_NAME: ${{ steps.release-drafter.outputs.tag_name }}
+          MAJOR: ${{ steps.semver.outputs.major }}
+          MINOR: ${{ steps.semver.outputs.minor }}
+          REPOSITORY: ${{ github.repository }}
         run: |
-           git push -f origin "refs/tags/${{ steps.release-drafter.outputs.tag_name }}:refs/tags/${{ steps.semver.outputs.major }}"
-           git push -f origin "refs/tags/${{ steps.release-drafter.outputs.tag_name }}:refs/tags/${{ steps.semver.outputs.minor }}"
+           git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${REPOSITORY}.git"
+           git push -f origin "refs/tags/${TAG_NAME}:refs/tags/${MAJOR}"
+           git push -f origin "refs/tags/${TAG_NAME}:refs/tags/${MINOR}"
