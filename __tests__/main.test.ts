@@ -1,8 +1,10 @@
 import path from 'path'
 import os from 'os'
 import fs from 'fs'
-import { Context } from '@actions/github/lib/context'
+import * as github from '@actions/github'
 import { expect, test, beforeEach, afterEach } from '@jest/globals'
+
+type Context = typeof github.context
 import { createDirName, replaceWorkspace } from '../src/workspace.js'
 
 const workflowName = 'test'
