@@ -25,3 +25,6 @@ runs:
   using: 'node24'
   main: 'dist/main/index.js'
   post: 'dist/post/index.js'
+outputs:
+  real-path:
+    description: 'The real (symlink-resolved) path of the workspace directory created by this action'

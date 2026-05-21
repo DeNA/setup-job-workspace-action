@@ -277,3 +277,70 @@ test('replaceWorkspace() with repository name containing parent directory refere
     'my_repository'
   )
 })
+
+test('replaceWorkspace() outputs real-path with repository name', async () => {
+  const githubOutputFile = path.join(tmpDirPath, 'github_output')
+  await fs.promises.writeFile(githubOutputFile, '')
+  process.env.GITHUB_OUTPUT = githubOutputFile
+
+  const inputs = {
+    workspaceName: 'test-dir',
+    repositoryName: 'my_repository',
+    prefix: '',
+    suffix: '',
+    workingDirectory: ''
+  }
+  await replaceWorkspace(contextMock, inputs)
+
+  const outputContent = await fs.promises.readFile(githubOutputFile, 'utf8')
+  const expectedPath = path.join(
+    path.dirname(process.env.RUNNER_WORKSPACE!),
+    'my_repository',
+    'test-dir'
+  )
+  expect(outputContent).toMatch(/^real-path<</m)
+  expect(outputContent).toContain(expectedPath)
+})
+
+test('replaceWorkspace() outputs real-path with empty repository', async () => {
+  const githubOutputFile = path.join(tmpDirPath, 'github_output')
+  await fs.promises.writeFile(githubOutputFile, '')
+  process.env.GITHUB_OUTPUT = githubOutputFile
+
+  const inputs = {
+    workspaceName: 'test-dir',
+    repositoryName: '',
+    prefix: '',
+    suffix: '',
+    workingDirectory: ''
+  }
+  await replaceWorkspace(contextMock, inputs)
+
+  const outputContent = await fs.promises.readFile(githubOutputFile, 'utf8')
+  const expectedPath = path.join(process.env.RUNNER_WORKSPACE!, 'test-dir')
+  expect(outputContent).toMatch(/^real-path<</m)
+  expect(outputContent).toContain(expectedPath)
+})
+
+test('replaceWorkspace() outputs real-path with default workspace name', async () => {
+  const githubOutputFile = path.join(tmpDirPath, 'github_output')
+  await fs.promises.writeFile(githubOutputFile, '')
+  process.env.GITHUB_OUTPUT = githubOutputFile
+
+  const inputs = {
+    workspaceName: '',
+    repositoryName: '',
+    prefix: '',
+    suffix: '',
+    workingDirectory: ''
+  }
+  await replaceWorkspace(contextMock, inputs)
+
+  const outputContent = await fs.promises.readFile(githubOutputFile, 'utf8')
+  const expectedPath = path.join(
+    process.env.RUNNER_WORKSPACE!,
+    `${workflowName}-${jobName}`
+  )
+  expect(outputContent).toMatch(/^real-path<</m)
+  expect(outputContent).toContain(expectedPath)
+})

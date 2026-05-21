@@ -80,6 +80,7 @@ export async function replaceWorkspace(
   // ln -s "${TMP_DIR}" ${GITHUB_WORKSPACE}
   await fs.promises.symlink(virtualWorkspacePath, workspacePath, 'dir')
   core.info(`ln -s ${virtualWorkspacePath} ${workspacePath}`)
+  core.setOutput('real-path', virtualWorkspacePath)
 }
 
 export async function restoreWorkspace(): Promise<void> {
