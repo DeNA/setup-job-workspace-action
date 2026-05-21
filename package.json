@@ -42,9 +42,9 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^2.0.3",
-    "@actions/github": "^7.0.0",
-    "@actions/io": "^2.0.0"
+    "@actions/core": "^3.0.1",
+    "@actions/github": "^9.1.1",
+    "@actions/io": "^3.0.2"
   },
   "devDependencies": {
     "@eslint/compat": "^2.0.0",
@@ -52,9 +52,7 @@
     "@rollup/plugin-commonjs": "^29.0.0",
     "@rollup/plugin-node-resolve": "^16.0.3",
     "@rollup/plugin-typescript": "^12.3.0",
-    "@types/jest": "^30.0.0",
     "@types/node": "^24.12.2",
-    "@types/uuid": "^11.0.0",
     "@typescript-eslint/eslint-plugin": "^8.48.0",
     "@typescript-eslint/parser": "^8.32.1",
     "eslint": "^9.39.1",
@@ -66,7 +64,6 @@
     "jest": "^30.4.2",
     "make-coverage-badge": "^1.2.0",
     "prettier": "^3.7.3",
-    "prettier-eslint": "^16.4.2",
     "rollup": "^4.53.3",
     "ts-jest": "^29.4.9",
     "ts-jest-resolver": "^2.0.1",

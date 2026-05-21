@@ -2,7 +2,9 @@ import path from 'path'
 import fs from 'fs'
 import * as core from '@actions/core'
 import * as io from '@actions/io'
-import { Context } from '@actions/github/lib/context'
+import * as github from '@actions/github'
+
+type Context = typeof github.context
 import {
   getRunnerWorkspacePath,
   getWorkflowName,
