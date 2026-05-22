@@ -293,13 +293,16 @@ test('replaceWorkspace() outputs real-path with repository name', async () => {
   await replaceWorkspace(contextMock, inputs)
 
   const outputContent = await fs.promises.readFile(githubOutputFile, 'utf8')
-  const expectedPath = path.join(
-    path.dirname(process.env.RUNNER_WORKSPACE!),
-    'my_repository',
-    'test-dir'
+  const expectedPath = await fs.promises.realpath(
+    path.join(
+      path.dirname(process.env.RUNNER_WORKSPACE!),
+      'my_repository',
+      'test-dir'
+    )
   )
-  expect(outputContent).toMatch(/^real-path<</m)
-  expect(outputContent).toContain(expectedPath)
+  const match = outputContent.match(/^real-path<<([^\n]+)\n([^\n]+)\n\1/m)
+  expect(match).not.toBeNull()
+  expect(match![2]).toBe(expectedPath)
 })
 
 test('replaceWorkspace() outputs real-path with empty repository', async () => {
@@ -317,9 +320,12 @@ test('replaceWorkspace() outputs real-path with empty repository', async () => {
   await replaceWorkspace(contextMock, inputs)
 
   const outputContent = await fs.promises.readFile(githubOutputFile, 'utf8')
-  const expectedPath = path.join(process.env.RUNNER_WORKSPACE!, 'test-dir')
-  expect(outputContent).toMatch(/^real-path<</m)
-  expect(outputContent).toContain(expectedPath)
+  const expectedPath = await fs.promises.realpath(
+    path.join(process.env.RUNNER_WORKSPACE!, 'test-dir')
+  )
+  const match = outputContent.match(/^real-path<<([^\n]+)\n([^\n]+)\n\1/m)
+  expect(match).not.toBeNull()
+  expect(match![2]).toBe(expectedPath)
 })
 
 test('replaceWorkspace() outputs real-path with default workspace name', async () => {
@@ -337,10 +343,10 @@ test('replaceWorkspace() outputs real-path with default workspace name', async (
   await replaceWorkspace(contextMock, inputs)
 
   const outputContent = await fs.promises.readFile(githubOutputFile, 'utf8')
-  const expectedPath = path.join(
-    process.env.RUNNER_WORKSPACE!,
-    `${workflowName}-${jobName}`
+  const expectedPath = await fs.promises.realpath(
+    path.join(process.env.RUNNER_WORKSPACE!, `${workflowName}-${jobName}`)
   )
-  expect(outputContent).toMatch(/^real-path<</m)
-  expect(outputContent).toContain(expectedPath)
+  const match = outputContent.match(/^real-path<<([^\n]+)\n([^\n]+)\n\1/m)
+  expect(match).not.toBeNull()
+  expect(match![2]).toBe(expectedPath)
 })

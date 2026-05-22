@@ -23,7 +23,7 @@ inputs:
     default: "${{ runner.os == 'Windows' && '..' || '' }}"
 outputs:
   real-path:
-    description: 'The real (symlink-resolved) path of the workspace directory created by this action'
+    description: 'The fully resolved (all symlinks expanded) path of the workspace directory created by this action'
 
 runs:
   using: 'node24'

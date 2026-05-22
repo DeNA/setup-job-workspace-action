@@ -33220,7 +33220,8 @@ async function replaceWorkspace(context, inputs) {
     // ln -s "${TMP_DIR}" ${GITHUB_WORKSPACE}
     await fs__default.promises.symlink(virtualWorkspacePath, workspacePath, 'dir');
     info(`ln -s ${virtualWorkspacePath} ${workspacePath}`);
-    setOutput('real-path', virtualWorkspacePath);
+    const realPath = await fs__default.promises.realpath(virtualWorkspacePath);
+    setOutput('real-path', realPath);
 }
 
 async function run() {
