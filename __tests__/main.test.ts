@@ -300,7 +300,9 @@ test('replaceWorkspace() outputs real-path with repository name', async () => {
       'test-dir'
     )
   )
-  const match = outputContent.match(/^real-path<<([^\n]+)\n([^\n]+)\n\1/m)
+  const match = outputContent.match(
+    /^real-path<<([^\r\n]+)\r?\n([^\r\n]+)\r?\n\1/m
+  )
   expect(match).not.toBeNull()
   expect(match![2]).toBe(expectedPath)
 })
@@ -323,7 +325,9 @@ test('replaceWorkspace() outputs real-path with empty repository', async () => {
   const expectedPath = await fs.promises.realpath(
     path.join(process.env.RUNNER_WORKSPACE!, 'test-dir')
   )
-  const match = outputContent.match(/^real-path<<([^\n]+)\n([^\n]+)\n\1/m)
+  const match = outputContent.match(
+    /^real-path<<([^\r\n]+)\r?\n([^\r\n]+)\r?\n\1/m
+  )
   expect(match).not.toBeNull()
   expect(match![2]).toBe(expectedPath)
 })
@@ -346,7 +350,9 @@ test('replaceWorkspace() outputs real-path with default workspace name', async (
   const expectedPath = await fs.promises.realpath(
     path.join(process.env.RUNNER_WORKSPACE!, `${workflowName}-${jobName}`)
   )
-  const match = outputContent.match(/^real-path<<([^\n]+)\n([^\n]+)\n\1/m)
+  const match = outputContent.match(
+    /^real-path<<([^\r\n]+)\r?\n([^\r\n]+)\r?\n\1/m
+  )
   expect(match).not.toBeNull()
   expect(match![2]).toBe(expectedPath)
 })
