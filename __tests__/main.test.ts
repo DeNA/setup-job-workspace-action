@@ -277,3 +277,82 @@ test('replaceWorkspace() with repository name containing parent directory refere
     'my_repository'
   )
 })
+
+test('replaceWorkspace() outputs real-path with repository name', async () => {
+  const githubOutputFile = path.join(tmpDirPath, 'github_output')
+  await fs.promises.writeFile(githubOutputFile, '')
+  process.env.GITHUB_OUTPUT = githubOutputFile
+
+  const inputs = {
+    workspaceName: 'test-dir',
+    repositoryName: 'my_repository',
+    prefix: '',
+    suffix: '',
+    workingDirectory: ''
+  }
+  await replaceWorkspace(contextMock, inputs)
+
+  const outputContent = await fs.promises.readFile(githubOutputFile, 'utf8')
+  const expectedPath = await fs.promises.realpath(
+    path.join(
+      path.dirname(process.env.RUNNER_WORKSPACE!),
+      'my_repository',
+      'test-dir'
+    )
+  )
+  const match = outputContent.match(
+    /^real-path<<([^\r\n]+)\r?\n([^\r\n]+)\r?\n\1/m
+  )
+  expect(match).not.toBeNull()
+  expect(match![2]).toBe(expectedPath)
+})
+
+test('replaceWorkspace() outputs real-path with empty repository', async () => {
+  const githubOutputFile = path.join(tmpDirPath, 'github_output')
+  await fs.promises.writeFile(githubOutputFile, '')
+  process.env.GITHUB_OUTPUT = githubOutputFile
+
+  const inputs = {
+    workspaceName: 'test-dir',
+    repositoryName: '',
+    prefix: '',
+    suffix: '',
+    workingDirectory: ''
+  }
+  await replaceWorkspace(contextMock, inputs)
+
+  const outputContent = await fs.promises.readFile(githubOutputFile, 'utf8')
+  const expectedPath = await fs.promises.realpath(
+    path.join(process.env.RUNNER_WORKSPACE!, 'test-dir')
+  )
+  const match = outputContent.match(
+    /^real-path<<([^\r\n]+)\r?\n([^\r\n]+)\r?\n\1/m
+  )
+  expect(match).not.toBeNull()
+  expect(match![2]).toBe(expectedPath)
+})
+
+test('replaceWorkspace() outputs real-path with default workspace name', async () => {
+  const githubOutputFile = path.join(tmpDirPath, 'github_output')
+  await fs.promises.writeFile(githubOutputFile, '')
+  process.env.GITHUB_OUTPUT = githubOutputFile
+
+  const inputs = {
+    workspaceName: '',
+    repositoryName: '',
+    prefix: '',
+    suffix: '',
+    workingDirectory: ''
+  }
+  await replaceWorkspace(contextMock, inputs)
+
+  const outputContent = await fs.promises.readFile(githubOutputFile, 'utf8')
+  const expectedPath = await fs.promises.realpath(
+    path.join(process.env.RUNNER_WORKSPACE!, `${workflowName}-${jobName}`)
+  )
+  const match = outputContent.match(
+    /^real-path<<([^\r\n]+)\r?\n([^\r\n]+)\r?\n\1/m
+  )
+  expect(match).not.toBeNull()
+  expect(match![2]).toBe(expectedPath)
+})

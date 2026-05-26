@@ -21,6 +21,10 @@ inputs:
     required: false
     description: 'Set working-directory for nodejs. default: "" (Linux, macOS), ".." (Windows)'
     default: "${{ runner.os == 'Windows' && '..' || '' }}"
+outputs:
+  real-path:
+    description: 'The fully resolved (all symlinks expanded) path of the workspace directory created by this action'
+
 runs:
   using: 'node24'
   main: 'dist/main/index.js'
