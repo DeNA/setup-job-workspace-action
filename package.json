@@ -65,7 +65,7 @@
     "make-coverage-badge": "^1.2.0",
     "prettier": "^3.8.3",
     "rollup": "^4.53.3",
-    "ts-jest": "^29.4.10",
+    "ts-jest": "^29.4.11",
     "ts-jest-resolver": "^2.0.1",
     "typescript": "^5.9.3",
     "husky": "^9.1.7"
