@@ -28189,6 +28189,24 @@ var ExitCode;
      */
     ExitCode[ExitCode["Failure"] = 1] = "Failure";
 })(ExitCode || (ExitCode = {}));
+//-----------------------------------------------------------------------
+// Variables
+//-----------------------------------------------------------------------
+/**
+ * Sets env variable for this action and future actions in the job
+ * @param name the name of the variable to set
+ * @param val the value of the variable. Non-string values will be converted to a string via JSON.stringify
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function exportVariable(name, val) {
+    const convertedVal = toCommandValue(val);
+    process.env[name] = convertedVal;
+    const filePath = process.env['GITHUB_ENV'] || '';
+    if (filePath) {
+        return issueFileCommand('ENV', prepareKeyValueMessage(name, val));
+    }
+    issueCommand('set-env', { name }, convertedVal);
+}
 /**
  * Gets the value of an input.
  * Unless trimWhitespace is set to false in InputOptions, the value is also trimmed.
@@ -33222,6 +33240,22 @@ async function replaceWorkspace(context, inputs) {
     info(`ln -s ${virtualWorkspacePath} ${workspacePath}`);
     const realPath = await fs__default.promises.realpath(virtualWorkspacePath);
     setOutput('real-path', realPath);
+    exportWorkspacePwd(workspacePath);
+}
+// git resolves symlinks before it evaluates `includeIf.gitdir` conditions, so a
+// condition that contains $GITHUB_WORKSPACE (e.g. the credential config that
+// `actions/checkout` v6 or later writes) never matches the real path of the
+// virtual workspace created by this action.
+// git falls back to matching the condition against $PWD when $PWD points to the
+// same directory as the current directory, so exporting $PWD as the symlinked
+// $GITHUB_WORKSPACE makes such conditions match again.
+// see: https://github.com/DeNA/setup-job-workspace-action/issues/296
+function exportWorkspacePwd(workspacePath) {
+    // git for Windows does not use $PWD, so exporting it has no effect there.
+    if (process.platform === 'win32')
+        return;
+    exportVariable('PWD', workspacePath);
+    info(`export PWD as ${workspacePath}`);
 }
 
 async function run() {

@@ -356,3 +356,25 @@ test('replaceWorkspace() outputs real-path with default workspace name', async (
   expect(match).not.toBeNull()
   expect(match![2]).toBe(expectedPath)
 })
+
+test('replaceWorkspace() exports PWD as symlinked $GITHUB_WORKSPACE', async () => {
+  const githubEnvFile = path.join(tmpDirPath, 'github_env')
+  await fs.promises.writeFile(githubEnvFile, '')
+  process.env.GITHUB_ENV = githubEnvFile
+
+  const inputs = {
+    workspaceName: 'test-dir',
+    repositoryName: '',
+    prefix: '',
+    suffix: '',
+    workingDirectory: ''
+  }
+  const workspacePath = process.env.GITHUB_WORKSPACE!
+  await replaceWorkspace(contextMock, inputs)
+
+  const envContent = await fs.promises.readFile(githubEnvFile, 'utf8')
+  const match = envContent.match(/^PWD<<([^\r\n]+)\r?\n([^\r\n]+)\r?\n\1/m)
+  // git for Windows does not use $PWD, so it is not exported.
+  const expected = process.platform === 'win32' ? null : workspacePath
+  expect(match !== null ? match[2] : null).toBe(expected)
+})

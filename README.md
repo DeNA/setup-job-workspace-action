@@ -117,6 +117,12 @@ This defference comes from technical reason that how to get workflow yaml name. 
 
 If you want to keep the same workspace name between different versions of the runner or for future version upgrades, specify the `workspace-name` option explicitly.
 
+### `PWD` is exported as `$GITHUB_WORKSPACE`
+
+`actions/checkout` v6 or later stores credentials in a config file outside of the repository and refers to it from `.git/config` by an `includeIf "gitdir:..."` condition that is built from `$GITHUB_WORKSPACE`. git resolves symlinks before evaluating that condition, so the condition never matches the virtual workspace created by this action and git commands fail with `fatal: could not read Username for 'https://github.com/': terminal prompts disabled`. (see [#296](https://github.com/DeNA/setup-job-workspace-action/issues/296))
+
+git also matches the condition against `$PWD` when `$PWD` points to the same directory as the current directory, so this action exports `PWD` as the symlinked `$GITHUB_WORKSPACE` to keep such conditions working. It also makes `pwd` in `run` steps report `$GITHUB_WORKSPACE` instead of the resolved virtual workspace path. `PWD` is not exported on Windows because git for Windows does not use it.
+
 ## How it works
 
 GitHub Actions runner only has one workspace directory per repository ($GITHUB_WORKSPACE). That path is defined by the repository name, for example the workspace path of this repository is `/home/runner/work/setup-job-workspace-action/setup-job-workspace-action` in GitHub hosted Ubuntu runner.

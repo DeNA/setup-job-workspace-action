@@ -194,3 +194,37 @@ jobs:
         with:
           persist-credentials: false
         if: ${{ always() }}
+
+  checkout_with_credentials:
+    permissions:
+      contents: read
+    strategy:
+      matrix:
+        runner:
+          - ubuntu-slim
+          - ubuntu-latest
+          - macos-latest
+      fail-fast: false
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: ./
+
+      # actions/checkout v6 or later stores credentials in a config file that is
+      # referenced by an `includeIf.gitdir` condition built from $GITHUB_WORKSPACE.
+      # It must be usable even though $GITHUB_WORKSPACE is a symlink.
+      - name: Checkout with persisted credentials
+        uses: actions/checkout@v7
+
+      - name: Persisted credentials are available in the symlinked workspace
+        shell: bash
+        # Do not print the value because it contains the credentials.
+        run: git config --get http.https://github.com/.extraheader > /dev/null
+
+      - name: Checkout to new workspace for action post process
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+        if: ${{ always() }}
