@@ -13,7 +13,7 @@ jobs:
       contents: read
     strategy:
       matrix:
-        runner: 
+        runner:
           - ubuntu-slim
           - ubuntu-latest
           - macos-latest
@@ -60,7 +60,7 @@ jobs:
       contents: read
     strategy:
       matrix:
-        runner: 
+        runner:
           - ubuntu-slim
           - ubuntu-latest
           - macos-latest
@@ -110,7 +110,7 @@ jobs:
       contents: read
     strategy:
       matrix:
-        runner: 
+        runner:
           - ubuntu-slim
           - ubuntu-latest
           - macos-latest
@@ -148,7 +148,7 @@ jobs:
       contents: read
     strategy:
       matrix:
-        runner: 
+        runner:
           - ubuntu-slim
           - ubuntu-latest
           - macos-latest
@@ -216,7 +216,7 @@ jobs:
       # referenced by an `includeIf.gitdir` condition built from $GITHUB_WORKSPACE.
       # It must be usable even though $GITHUB_WORKSPACE is a symlink.
       - name: Checkout with persisted credentials
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7 # zizmor: ignore[artipacked]
 
       - name: Persisted credentials are available in the symlinked workspace
         shell: bash
