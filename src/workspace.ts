@@ -82,6 +82,24 @@ export async function replaceWorkspace(
   core.info(`ln -s ${virtualWorkspacePath} ${workspacePath}`)
   const realPath = await fs.promises.realpath(virtualWorkspacePath)
   core.setOutput('real-path', realPath)
+
+  exportWorkspacePwd(workspacePath)
+}
+
+// git resolves symlinks before it evaluates `includeIf.gitdir` conditions, so a
+// condition that contains $GITHUB_WORKSPACE (e.g. the credential config that
+// `actions/checkout` v6 or later writes) never matches the real path of the
+// virtual workspace created by this action.
+// git falls back to matching the condition against $PWD when $PWD points to the
+// same directory as the current directory, so exporting $PWD as the symlinked
+// $GITHUB_WORKSPACE makes such conditions match again.
+// see: https://github.com/DeNA/setup-job-workspace-action/issues/296
+function exportWorkspacePwd(workspacePath: string): void {
+  // git for Windows does not use $PWD, so exporting it has no effect there.
+  if (process.platform === 'win32') return
+
+  core.exportVariable('PWD', workspacePath)
+  core.info(`export PWD as ${workspacePath}`)
 }
 
 export async function restoreWorkspace(): Promise<void> {
