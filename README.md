@@ -123,6 +123,43 @@ If you want to keep the same workspace name between different versions of the ru
 
 git also matches the condition against `$PWD` when `$PWD` points to the same directory as the current directory, so this action exports `PWD` as the symlinked `$GITHUB_WORKSPACE` to keep such conditions working. It also makes `pwd` in `run` steps report `$GITHUB_WORKSPACE` instead of the resolved virtual workspace path. `PWD` is not exported on Windows because git for Windows does not use it.
 
+#### Checking out into a sub directory (`actions/checkout` `path` option)
+
+The workaround above only covers repositories checked out directly into `$GITHUB_WORKSPACE`. When you use the `path` option of `actions/checkout` v6 or later, the `includeIf "gitdir:..."` condition is built from `$GITHUB_WORKSPACE/<path>/.git`, while `$PWD` exported by this action points to `$GITHUB_WORKSPACE`. Because `$PWD` is not the current directory of git commands running in the sub directory, git cannot use the `$PWD` fallback and the condition still does not match. This action cannot fix it, so you need one of the following workarounds in your workflow.
+
+- Export `PWD` for the steps that run git commands in the checked out sub directory:
+
+  ```yaml
+  - uses: DeNA/setup-job-workspace-action@v4
+  - uses: actions/checkout@v6
+    with:
+      path: sub
+  - run: git fetch origin
+    working-directory: ${{ github.workspace }}/sub
+    env:
+      # Let git match the `includeIf "gitdir:..."` condition written by actions/checkout
+      PWD: ${{ github.workspace }}/sub
+  ```
+
+  If every step of the job works in the same sub directory, you can set it once with [`env` at the job level](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idenv) or by exporting the same value through `$GITHUB_ENV` right after the checkout step.
+
+- Or convert the conditional include written by `actions/checkout` into an unconditional one, so that the path of the repository no longer matters:
+
+  ```yaml
+  - uses: actions/checkout@v6
+    with:
+      path: sub
+  - name: Include checkout credentials unconditionally
+    working-directory: ${{ github.workspace }}/sub
+    run: |
+      credentials_config="$(git config --local --get-regexp '^includeIf\.gitdir:.*\.path$' | head -n 1 | cut -d ' ' -f 2-)"
+      test -n "${credentials_config}" && git config --local include.path "${credentials_config}"
+  ```
+
+- Or do not rely on the credentials stored by `actions/checkout` at all, for example by setting `persist-credentials: false` and passing a token explicitly to the git commands (`git -c http.extraheader=...`) or by using [`gh`](https://cli.github.com/) with `GH_TOKEN`.
+
+If you do not need a sub directory, checking out into `$GITHUB_WORKSPACE` (the default) and separating workspaces with the `workspace-name` / `prefix` / `suffix` options is the simplest solution.
+
 ## How it works
 
 GitHub Actions runner only has one workspace directory per repository ($GITHUB_WORKSPACE). That path is defined by the repository name, for example the workspace path of this repository is `/home/runner/work/setup-job-workspace-action/setup-job-workspace-action` in GitHub hosted Ubuntu runner.
