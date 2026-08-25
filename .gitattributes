@@ -1,1 +1,13 @@
-dist/** -diff linguist-generated=true 
+dist/** -diff linguist-generated=true
+
+# export settings
+src/** export-ignore
+.husky/** export-ignore
+.github/** export-ignore
+*.json export-ignore
+*.md export-ignore
+.* export-ignore
+*.yaml export-ignore
+*.mjs export-ignore
+*.ts export-ignore
+*.config.js export-ignore
